@@ -13,8 +13,8 @@ provider "aws" {
 }
 
 module "app" {
-  source    = "../../modules/app/"
-  env       = "dev"
+  source = "../../modules/app/"
+  env    = "dev"
 }
 
 output "url" {
