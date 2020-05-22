@@ -45,7 +45,7 @@ module "my_codepipeline" {
   //Deploy
   deploy_terraform_application_path = "./terraform-iac/${var.env}/app/"
   deploy_code_deploy_config = {
-    ApplicationName     = "${local.name}-${var.env}-codedeploy"
-    DeploymentGroupName = "${local.name}-${var.env}-deployment-group"
+    ApplicationName     = "${local.name}-${var.env}-cd"
+    DeploymentGroupName = "${local.name}-${var.env}-dg"
   }
 }
