@@ -4,6 +4,7 @@ artifacts:
   - "./terraform-iac/**/*"
   - "*.tfvars"
   - "./tst/codedeploy-hooks/after-allow-test-traffic/lambda.zip"
+  - "./src/lambda.zip"
 cache:
   paths:
     - "/root/cache/**/*"
