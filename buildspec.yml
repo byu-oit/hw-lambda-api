@@ -16,13 +16,13 @@ phases:
     # build app
     - "cd src"
     - "npm install"
-    - zip -r lambda.zip * .*
+    - "zip -r lambda.zip *"
     - "cd .."
     # build test lambda
     - "cd tst/codedeploy-hooks/after-allow-test-traffic"
     - "npm install"
     - "cp -R ../../../.postman ."
-    - "zip -r lambda.zip * .*"
+    - "zip -r lambda.zip *"
     - "cd ../../.."
     # pass vars to terraform deploy stage
     # TODO: maybe this is where we look up the lambda's CurrentVersion to pass in to the appspec
