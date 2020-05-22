@@ -91,6 +91,7 @@ jobs:
       with:
         status: ${{ job.status }}
         fields: repo,message,commit,author,action,eventName,ref,workflow # selectable (default: repo,message)
+        channel: C0AGQEZMF #slack-bot-testing
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_url }} # required
       if: always() # Pick up events even if the job fails or is canceled.
