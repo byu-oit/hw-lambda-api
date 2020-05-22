@@ -15,12 +15,12 @@ variable "github_token" {
 }
 
 locals {
-  name   = "hello-world-api"
+  name   = "hw-lambda-api"
   branch = var.env == "prd" ? "master" : var.env
 }
 
 module "my_codepipeline" {
-  source                        = "github.com/byu-oit/terraform-aws-fargate-codepipeline?ref=v0.1.0"
+  source                        = "github.com/byu-oit/terraform-aws-fargate-codepipeline?ref=v0.1.1"
   pipeline_name                 = "${local.name}-${var.env}"
   role_permissions_boundary_arn = var.role_permissions_boundary_arn
   power_builder_role_arn        = var.power_builder_role_arn

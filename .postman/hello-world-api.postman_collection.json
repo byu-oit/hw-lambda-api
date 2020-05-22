@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "868867bc-aac9-428b-9743-164cf7acfecf",
-		"name": "hello-world-api",
+		"name": "hw-lambda-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -60,11 +60,11 @@
 							"});",
 							"pm.test(\"Table name is correct\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.table).to.eql(\"hello-world-api-dev\");",
+							"    pm.expect(jsonData.table).to.eql(\"hw-lambda-api-dev\");",
 							"});",
 							"pm.test(\"Bucket name is correct\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.bucket).to.eql(\"hello-world-api-dev\");",
+							"    pm.expect(jsonData.bucket).to.eql(\"hw-lambda-api-dev\");",
 							"});"
 						],
 						"type": "text/javascript"
