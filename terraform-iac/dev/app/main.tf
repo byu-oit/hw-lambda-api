@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "terraform-state-storage-<account_number>"
-    dynamodb_table = "terraform-state-lock-<account_number>"
-    key            = "hello-world-api-dev/app.tfstate"
+    bucket         = "terraform-state-storage-977306314792"
+    dynamodb_table = "terraform-state-lock-977306314792"
+    key            = "hw-lambda-api-dev/app.tfstate"
     region         = "us-west-2"
   }
 }
@@ -12,14 +12,9 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-variable "image_tag" {
-  type = string
-}
-
 module "app" {
-  source    = "../../modules/app/"
-  env       = "dev"
-  image_tag = var.image_tag
+  source = "../../modules/app/"
+  env    = "dev"
 }
 
 output "url" {

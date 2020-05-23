@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket         = "terraform-state-storage-<account_number>"
     dynamodb_table = "terraform-state-lock-<account_number>"
-    key            = "hello-world-api-prd/pipeline.tfstate"
+    key            = "hw-lambda-api-prd/pipeline.tfstate"
     region         = "us-west-2"
   }
 }
