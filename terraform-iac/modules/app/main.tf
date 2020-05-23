@@ -17,7 +17,7 @@ module "acs" {
 
 module "lambda_api" {
   # source                        = "../../../../terraform-aws-lambda-api/"
-  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=fix-output"
+  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=fix-codedeploy"
   app_name                      = local.name
   env                           = var.env
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
