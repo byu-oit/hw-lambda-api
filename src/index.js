@@ -55,7 +55,7 @@ exports.handler = async function (event, context) {
     res.status(500).send('Error reading table or S3')
   }
   */
-  if (path == '/health') {
+  if (event.path == '/health') {
     return {
       'isBase64Encoded': false,
       'statusCode': 200,
@@ -66,7 +66,7 @@ exports.handler = async function (event, context) {
       'body': 'healthy'
     }
   }
-  else if (path == '/') {
+  else if (event.path == '/') {
     return {
       'isBase64Encoded': false,
       'statusCode': statusCode,
