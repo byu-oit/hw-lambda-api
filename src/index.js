@@ -67,9 +67,16 @@ exports.handler = async function (event, context) {
     }
   }
   else if (event.path == '/') {
+    body = {
+      secret: 'TODO: get secret, table name, and bucket name', //process.env.SOME_SECRET,
+      table: 'hw-lambda-api-dev', //process.env.DYNAMO_TABLE_NAME,
+      numItemsInDynamo: 0, //dynamoData.Count,
+      bucket: 'hw-lambda-api-dev', //process.env.BUCKET_NAME,
+      numObjectsInS3: 0 //s3Data.KeyCount
+    }
     return {
       'isBase64Encoded': false,
-      'statusCode': statusCode,
+      'statusCode': 200,
       'statusDescription': '200 OK',
       'headers': {
         'Content-Type': 'application/json'
@@ -80,8 +87,8 @@ exports.handler = async function (event, context) {
   else {
     return {
       'isBase64Encoded': false,
-      'statusCode': statusCode,
-      'statusDescription': '200 OK',
+      'statusCode': 404,
+      'statusDescription': '404 Not Found',
       'headers': {},
       'body': ''
     }
