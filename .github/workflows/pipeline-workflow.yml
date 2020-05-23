@@ -52,6 +52,9 @@ jobs:
       working-directory: ${{ env.tf_working_dir }}
       run: terraform init
 
+    # TODO: Add step to fetch currently deployed lambda version
+
+    # TODO: Pass currently deployed lambda version into plan
     - name: 'Terraform Plan'
       working-directory: ${{ env.tf_working_dir }}
       run: terraform plan -out=plan
@@ -64,6 +67,7 @@ jobs:
         client-secret: ${{ secrets.standard_change_sandbox_client_secret }}
         template-id: ${{ env.template_id }}
 
+    # TODO: Pass currently deployed lambda version into apply
     - name: 'Terraform Apply'
       working-directory: ${{ env.tf_working_dir }}
       run: terraform apply plan
