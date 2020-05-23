@@ -41,7 +41,7 @@ jobs:
       run: |
         npm install
         cp -R ../../../.postman .
-        zip -r lambda.zip *
+        zip -r lambda.zip * .postman
 
     - name: 'Terraform Setup'
       uses: hashicorp/setup-terraform@v1
