@@ -55,15 +55,35 @@ exports.handler = async function (event, context) {
     res.status(500).send('Error reading table or S3')
   }
   */
-
-  return {
-    'isBase64Encoded': false,
-    'statusCode': 200,
-    'statusDescription': '200 OK',
-    'headers': {
-      'Set-cookie': 'cookies',
-      'Content-Type': 'application/json'
-    },
-    'body': '{"message":"Hello, World! ... Yo!"}' // This needs to be a string - If you want to return JSON, you'll need to stringify it
+  if (path == '/health') {
+    return {
+      'isBase64Encoded': false,
+      'statusCode': 200,
+      'statusDescription': '200 OK',
+      'headers': {
+        'Content-Type': 'text/plain'
+      },
+      'body': 'healthy'
+    }
+  }
+  else if (path == '/') {
+    return {
+      'isBase64Encoded': false,
+      'statusCode': statusCode,
+      'statusDescription': '200 OK',
+      'headers': {
+        'Content-Type': 'application/json'
+      },
+      'body': '{"message":"Hello, World! ... Yo!"}' // This needs to be a string - If you want to return JSON, you'll need to stringify it
+    }
+ }
+  else {
+    return {
+      'isBase64Encoded': false,
+      'statusCode': statusCode,
+      'statusDescription': '200 OK',
+      'headers': {},
+      'body': ''
+    }
   }
 }
