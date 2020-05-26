@@ -13,7 +13,7 @@ Example of creating and deploying an API with Lambda and Terraform on AWS.
 
   You need your own repo so that you can push changes and have CodePipeline deploy them.
   
-  Keep your repo name relatively short. Since we're creating AWS resources based off the name, we've seen [issues with repo names longer than about 24 characters](https://github.com/byu-oit/hw-lambda-api/issues/22).
+  Keep your repo name relatively short. Since we're creating AWS resources based off the name, we've seen [issues with repo names longer than about 24 characters](https://github.com/byu-oit/hello-world-api/issues/22).
 
 * Clone your new repo
 ```
@@ -45,42 +45,29 @@ terraform init
 terraform apply
 ```
 
-In the AWS Console, see if you can find the resources from `setup.tf` (ECR, SSM Param).
+In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param).
 
-### Deploy the pipeline
+### Enable GitHub Actions on your repo
 
-```
-cd ../pipeline/
-terraform init
-terraform apply
-```
+* In GitHub, go to the `Actions` tab for your repo (e.g. https://github.com/byu-oit/my-repo/actions)
+* Click the `Enable Actions on this repo` button
 
-In the AWS Console, find the CodePipeline. Look at the "details" of each stage as it is executing, to learn what the stage does.
+If you look at `.github/workflows/pipeline-workflow.yml`, you'll see that it is setup to run on pushes to the dev branch. Because you have already pushed to the dev branch, this workflow should be running now.
 
-See if you can find each of the resources from `pipeline.tf`.
+* In GitHub, click on the workflow run (it has the same name as the last commit message you pushed)
+* Click on the `Build and deploy Lambda API to dev` job
+* Expand any of the steps to see what they are doing
 
 ### View the deployed application
 
-Anytime after the `Terraform` phase succeeds:
+Anytime after the `Terraform Apply` step succeeds:
 ```
 cd ../app/
 terraform init
 terraform output
 ```
 
-This will output a DNS Name. Enter this in a browser. It will probably return `503 Service Unavailable`. It takes some time for the ECS Tasks to spin up and for the ALB to recognize that they are healthy.
-
-In the AWS Console, see if you can find the ECS Service and see the state of its ECS Tasks. Also see if you can find the ALB Target Group, and notice when Tasks are added to it.
-
-> Note:
-> 
-> While Terraform creates the ECS Service, it doesn't actually spin up any ECS Tasks. This isn't Terraform's job. The ECS Service is responsible for ensuring that ECS Tasks are running.
-> 
-> Because of this, if the ECS Tasks fail to launch (due to bugs in the code causing the docker container to crash, for example), Terraform won't know anything about that. From Terraform's perspective, the deployment was successful.
-> 
-> These type of issues can often be tracked down by finding the Stopped ECS Tasks in the ECS Console, and looking at their logs or their container status.
-
-Once the Tasks are running, you should be able to hit the app's URL and get a JSON response. Between `index.js` and `main.tf`, can you find what pieces are necessary to make this data available to the app?
+This will output a DNS Name. Enter this in a browser. You should get a JSON response. Between `index.js` and `main.tf`, can you find what pieces are necessary to make this data available to the app?
 
 In the AWS Console, see if you can find the other resources from `main.tf`.
 
@@ -93,13 +80,13 @@ git commit -am "try deploying a change"
 git push
 ```
 
-In the AWS Console, watch the CodePipeline deploy. The CodeDeploy stage is particularly interesting. Once CodeDeploy says that the Replacement tasks are serving traffic, hit your application in the browser and see if your change worked. If the service is broken, look at the stopped ECS Tasks in the ECS Console to see if you can figure out why.
+In GitHub Actions, watch the deploy steps run (you have a new push, so you'll have to go back and select the new worflow run instance and the job again). Once it gets to the CodeDeploy step, you can watch the deploy happen in the CodeDeploy console in AWS. Once CodeDeploy says that production traffic has been switched over, hit your application in the browser and see if your change worked. If the service is broken, look at you Lambda logs in CloudWatch to see if you can figure out why.
 
 > Note: 
 >
-> It's always best to test your changes locally before pushing to GitHub and AWS. Testing locally will significantly increase your productivity as you won't be constantly waiting for CodePipeline to deploy, just to discover bugs.
+> It's always best to test your changes locally before pushing to GitHub and AWS. Testing locally will significantly increase your productivity as you won't be constantly waiting for GitHub Actions and CodeDeploy to deploy, just to discover bugs.
 >
-> You can either test locally inside Docker, or with Node directly on your computer. Whichever method you choose, you'll have to setup the environment variables that ECS makes available to your code when it runs in AWS. You can find these environment variables in `index.js` and `main.tf`.
+> You can either test locally inside Docker, or with Node directly on your computer. Whichever method you choose, you'll have to setup any environment variables that your code is expecting when it runs in AWS. You can find these environment variables in `index.js` and `main.tf`. You'll also have to provide an alternate way of serving your API. Fronting the API code with an express app is a common pattern for local development. Then switching to using the Lambda Handler when deployed in AWS.
 
 ## Learn what was built
 
