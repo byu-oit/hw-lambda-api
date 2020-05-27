@@ -6,7 +6,7 @@ on:
 env:
   tf_version: '0.12.24'
   tf_working_dir: './terraform-iac/dev/app'
-  template_id: 'Codepipeline-Standard-Change'
+  template_id: 'Codepipeline-Standard-Change' # Change this to the Standard Change Template for your project
 
 jobs:
 

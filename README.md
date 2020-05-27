@@ -80,7 +80,7 @@ git commit -am "try deploying a change"
 git push
 ```
 
-In GitHub Actions, watch the deploy steps run (you have a new push, so you'll have to go back and select the new worflow run instance and the job again). Once it gets to the CodeDeploy step, you can watch the deploy happen in the CodeDeploy console in AWS. Once CodeDeploy says that production traffic has been switched over, hit your application in the browser and see if your change worked. If the service is broken, look at you Lambda logs in CloudWatch to see if you can figure out why.
+In GitHub Actions, watch the deploy steps run (you have a new push, so you'll have to go back and select the new workflow run instance and the job again). Once it gets to the CodeDeploy step, you can watch the deploy happen in the CodeDeploy console in AWS. Once CodeDeploy says that production traffic has been switched over, hit your application in the browser and see if your change worked. If the service is broken, look at you Lambda logs in CloudWatch to see if you can figure out why.
 
 > Note: 
 >
