@@ -16,8 +16,7 @@ module "acs" {
 }
 
 module "lambda_api" {
-  # source                        = "../../../../terraform-aws-lambda-api/"
-  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v0.2.0"
+  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.0.0"
   app_name                      = local.name
   env                           = var.env
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
@@ -224,4 +223,16 @@ EOF
 
 output "url" {
   value = module.lambda_api.dns_record.name
+}
+
+output "codedeploy_app_name" {
+  value = module.lambda_api.codedeploy_deployment_group.app_name
+}
+
+output "codedeploy_deployment_group_name" {
+  value = module.lambda_api.codedeploy_deployment_group.deployment_group_name
+}
+
+output "codedeploy_appspec_json_file" {
+  value = module.lambda_api.codedeploy_appspec_json_file
 }
