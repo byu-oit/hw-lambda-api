@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master, dev ]
 env:
-  tf_version: '0.12.24'
+  tf_version: '0.12.26'
 
 jobs:
 
@@ -88,7 +88,7 @@ jobs:
       working-directory: ${{ env.tf_working_dir }}
       run: terraform apply plan
 
-      - name: 'Get CD App Name'
+    - name: 'Get CD App Name'
       id: cd-app-name
       working-directory: ${{ env.tf_working_dir }}
       run: terraform output codedeploy_app_name
