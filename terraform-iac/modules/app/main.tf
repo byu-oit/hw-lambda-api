@@ -16,7 +16,7 @@ module "acs" {
 }
 
 module "lambda_api" {
-  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.0.0"
+  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.1.0"
   app_name                      = local.name
   env                           = var.env
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
@@ -26,7 +26,6 @@ module "lambda_api" {
   hosted_zone                   = module.acs.route53_zone
   https_certificate_arn         = module.acs.certificate.arn
   public_subnet_ids             = module.acs.public_subnet_ids
-  private_subnet_ids            = module.acs.private_subnet_ids
   vpc_id                        = module.acs.vpc.id
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
   codedeploy_test_listener_port = 4443
