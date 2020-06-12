@@ -55,42 +55,40 @@ exports.handler = async function (event, context) {
     res.status(500).send('Error reading table or S3')
   }
   */
-  if (event.path == '/health') {
+  if (event.path === '/health') {
     return {
-      'isBase64Encoded': false,
-      'statusCode': 200,
-      'statusDescription': '200 OK',
-      'headers': {
+      isBase64Encoded: false,
+      statusCode: 200,
+      statusDescription: '200 OK',
+      headers: {
         'Content-Type': 'text/plain'
       },
-      'body': 'healthy'
+      body: 'healthy'
     }
-  }
-  else if (event.path == '/') {
-    body = {
-      secret: 'TODO: get secret, table name, and bucket name', //process.env.SOME_SECRET,
-      table: 'hw-lambda-api-dev', //process.env.DYNAMO_TABLE_NAME,
-      numItemsInDynamo: 0, //dynamoData.Count,
-      bucket: 'hw-lambda-api-dev', //process.env.BUCKET_NAME,
-      numObjectsInS3: 0 //s3Data.KeyCount
+  } else if (event.path === '/') {
+    const body = {
+      secret: 'TODO: get secret, table name, and bucket name', // process.env.SOME_SECRET,
+      table: 'hw-lambda-api-dev', // process.env.DYNAMO_TABLE_NAME,
+      numItemsInDynamo: 0, // dynamoData.Count,
+      bucket: 'hw-lambda-api-dev', // process.env.BUCKET_NAME,
+      numObjectsInS3: 0 // s3Data.KeyCount
     }
     return {
-      'isBase64Encoded': false,
-      'statusCode': 200,
-      'statusDescription': '200 OK',
-      'headers': {
+      isBase64Encoded: false,
+      statusCode: 200,
+      statusDescription: '200 OK',
+      headers: {
         'Content-Type': 'application/json'
       },
-      'body': JSON.stringify(body)
+      body: JSON.stringify(body)
     }
- }
-  else {
+  } else {
     return {
-      'isBase64Encoded': false,
-      'statusCode': 404,
-      'statusDescription': '404 Not Found',
-      'headers': {},
-      'body': ''
+      isBase64Encoded: false,
+      statusCode: 404,
+      statusDescription: '404 Not Found',
+      headers: {},
+      body: ''
     }
   }
 }

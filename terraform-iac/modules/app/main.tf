@@ -9,6 +9,8 @@ locals {
     data-sensitivity = "public"
     repo             = "https://github.com/byu-oit/${local.name}"
   }
+  some_secret_name = "/${local.name}/${var.env}/some-secret"
+  some_secret_arn  = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${local.some_secret_name}"
 }
 
 module "acs" {
@@ -17,6 +19,10 @@ module "acs" {
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
+
+data "aws_ssm_parameter" "some_secret" {
+  name = local.some_secret_name
+}
 
 module "lambda_api" {
   source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.1.0"
@@ -33,6 +39,11 @@ module "lambda_api" {
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
   codedeploy_test_listener_port = 4443
   use_codedeploy                = true
+
+  environment_variables = {
+    "SOME_SECRET_NAME" = local.some_secret_name                   # You can pass in the secret name and fetch it in code
+    "SOME_SECRET"      = data.aws_ssm_parameter.some_secret.value # or you can pass in the secret value, but you'll have to re-deploy if the value changes
+  }
 
   lambda_policies = [
     aws_iam_policy.my_ssm_policy.arn,
@@ -62,7 +73,7 @@ resource "aws_iam_policy" "my_ssm_policy" {
               "ssm:GetParameter",
               "ssm:GetParemetersByPath"
             ],
-            "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/${var.env}/some-secret"
+            "Resource": "${local.some_secret_arn}"
         }
     ]
 }
