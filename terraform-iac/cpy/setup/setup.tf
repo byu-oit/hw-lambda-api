@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket         = "terraform-state-storage-539738229445"
     dynamodb_table = "terraform-state-lock-539738229445"
-    key            = "hw-lambda-api-prd/setup.tfstate"
+    key            = "hw-lambda-api-cpy/setup.tfstate"
     region         = "us-west-2"
   }
 }
@@ -19,6 +19,6 @@ variable "some_secret" {
 
 module "setup" {
   source      = "../../modules/setup/"
-  env         = "prd"
+  env         = "cpy"
   some_secret = var.some_secret
 }
