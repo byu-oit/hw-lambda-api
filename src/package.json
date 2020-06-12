@@ -1,5 +1,5 @@
 {
-  "name": "hello-world-docker-api",
+  "name": "hw-lambda-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,18 +7,21 @@
     "aws-sdk": "^2.676.0",
     "express": "^4.17.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "standard": "^14.3.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\"",
+    "lint": "npx standard"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/byu-oit/hello-world-docker-api.git"
+    "url": "git+https://github.com/byu-oit/hw-lambda-api.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/byu-oit/hello-world-docker-api/issues"
+    "url": "https://github.com/byu-oit/hw-lambda-api/issues"
   },
-  "homepage": "https://github.com/byu-oit/hello-world-docker-api#readme"
+  "homepage": "https://github.com/byu-oit/hw-lambda-api#readme"
 }

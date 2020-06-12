@@ -9,10 +9,19 @@ locals {
     data-sensitivity = "public"
     repo             = "https://github.com/byu-oit/${local.name}"
   }
+  some_secret_name = "/${local.name}/${var.env}/some-secret"
+  some_secret_arn  = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${local.some_secret_name}"
 }
 
 module "acs" {
   source = "github.com/byu-oit/terraform-aws-acs-info?ref=v2.1.0"
+}
+
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+data "aws_ssm_parameter" "some_secret" {
+  name = local.some_secret_name
 }
 
 module "lambda_api" {
@@ -31,7 +40,13 @@ module "lambda_api" {
   codedeploy_test_listener_port = 4443
   use_codedeploy                = true
 
+  environment_variables = {
+    "SOME_SECRET_NAME" = local.some_secret_name                   # You can pass in the secret name and fetch it in code
+    "SOME_SECRET"      = data.aws_ssm_parameter.some_secret.value # or you can pass in the secret value, but you'll have to re-deploy if the value changes
+  }
+
   lambda_policies = [
+    aws_iam_policy.my_ssm_policy.arn,
     aws_iam_policy.my_dynamo_policy.arn,
     aws_iam_policy.my_s3_policy.arn
   ]
@@ -40,6 +55,29 @@ module "lambda_api" {
     BeforeAllowTraffic = aws_lambda_function.test_lambda.function_name
     AfterAllowTraffic  = null
   }
+}
+
+resource "aws_iam_policy" "my_ssm_policy" {
+  name        = "${local.name}-ssm-${var.env}"
+  path        = "/"
+  description = "Access to ssm parameters"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+              "ssm:GetParameters",
+              "ssm:GetParameter",
+              "ssm:GetParemetersByPath"
+            ],
+            "Resource": "${local.some_secret_arn}"
+        }
+    ]
+}
+EOF
 }
 
 resource "aws_dynamodb_table" "my_dynamo_table" {

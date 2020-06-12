@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket         = "terraform-state-storage-<account_number>"
-    dynamodb_table = "terraform-state-lock-<account_number>"
+    bucket         = "terraform-state-storage-977306314792"
+    dynamodb_table = "terraform-state-lock-977306314792"
     key            = "hw-lambda-api-dev/setup.tfstate"
     region         = "us-west-2"
   }
@@ -14,7 +14,7 @@ provider "aws" {
 
 variable "some_secret" {
   type        = string
-  description = "Some secret string that will be stored in SSM and mounted into the Fargate Tasks as an environment variable"
+  description = "Some secret string that will be stored in SSM for the Lambda to access at runtime."
 }
 
 module "setup" {
