@@ -149,6 +149,19 @@ jobs:
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
 
+      - name: Build App Lambda
+        working-directory: src
+        run: |
+          npm install --production
+          zip -r lambda.zip *
+
+      - name: Build Test Lambda
+        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
+        run: |
+          npm install --production
+          cp -R ../../../.postman .
+          zip -r lambda.zip * .postman
+
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v1
         with:
