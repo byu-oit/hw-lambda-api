@@ -73,7 +73,7 @@ resource "aws_iam_policy" "my_ssm_policy" {
               "ssm:GetParameter",
               "ssm:GetParemetersByPath"
             ],
-            "Resource": "${local.my_secret_arn}"
+            "Resource": "${local.some_secret_arn}"
         }
     ]
 }
