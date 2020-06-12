@@ -15,6 +15,9 @@ module "acs" {
   source = "github.com/byu-oit/terraform-aws-acs-info?ref=v2.1.0"
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 module "lambda_api" {
   source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.1.0"
   app_name                      = local.name
@@ -32,6 +35,7 @@ module "lambda_api" {
   use_codedeploy                = true
 
   lambda_policies = [
+    aws_iam_policy.my_ssm_policy.arn,
     aws_iam_policy.my_dynamo_policy.arn,
     aws_iam_policy.my_s3_policy.arn
   ]
@@ -40,6 +44,29 @@ module "lambda_api" {
     BeforeAllowTraffic = aws_lambda_function.test_lambda.function_name
     AfterAllowTraffic  = null
   }
+}
+
+resource "aws_iam_policy" "my_ssm_policy" {
+  name        = "${local.name}-ssm-${var.env}"
+  path        = "/"
+  description = "Access to ssm parameters"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+              "ssm:GetParameters",
+              "ssm:GetParameter",
+              "ssm:GetParemetersByPath"
+            ],
+            "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/${var.env}/some-secret"
+        }
+    ]
+}
+EOF
 }
 
 resource "aws_dynamodb_table" "my_dynamo_table" {

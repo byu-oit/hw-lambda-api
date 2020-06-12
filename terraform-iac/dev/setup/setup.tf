@@ -14,7 +14,7 @@ provider "aws" {
 
 variable "some_secret" {
   type        = string
-  description = "Some secret string that will be stored in SSM and mounted into the Fargate Tasks as an environment variable"
+  description = "Some secret string that will be stored in SSM for the Lambda to access at runtime."
 }
 
 module "setup" {
