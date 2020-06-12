@@ -25,11 +25,14 @@ cd my-new-repo
 git checkout -b dev
 ```
 * Find and replace across the repo:
-  * replace `<account_number>` with your AWS account number, using your `dev` account in `/terraform-iac/dev` and your `prd` account in `/terraform-iac/prd`
+  * replace `977306314792` with your dev AWS account number
+  * replace `539738229445` with your prd AWS account number
   * replace `hw-lambda-api` with the name of your repo
   * rename the `.postman/hw-lambda-api.postman_collection.json` file with the name of your repo
   * replace `byu-oit-terraform-dev` with the name of your `dev` AWS account
+  * replace `byu_oit_terraform_dev` with the name of your `dev` AWS account (with underscores)
   * replace `byu-oit-terraform-prd` with the name of your `prd` AWS account
+  * replace `byu_oit_terraform_prd` with the name of your `prd` AWS account (with underscores)
 * Commit/push your changes
 ```
 git commit -am "update template with repo specific details" 
@@ -50,6 +53,9 @@ In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param
 
 ### Enable GitHub Actions on your repo
 
+* Send a Slack message to #devops-tooling, requesting that GitHub Secrets be added to your repo. Include:
+  * The name of your GitHub repo
+  * The name of your AWS accounts
 * In GitHub, go to the `Actions` tab for your repo (e.g. https://github.com/byu-oit/my-repo/actions)
 * Click the `Enable Actions on this repo` button
 
