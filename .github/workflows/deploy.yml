@@ -4,6 +4,7 @@ on:
   push:
     branches: [dev, stg, master]
 env:
+  node_version: "12.x"
   tf_version: "0.12.26" # must match value in terraform-iac/*/app/main.tf
 
 jobs:
@@ -102,6 +103,11 @@ jobs:
           aws-access-key-id: ${{ secrets[matrix.env.aws_key_name] }}
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node_version }}
 
       - name: Build App Lambda
         working-directory: src
