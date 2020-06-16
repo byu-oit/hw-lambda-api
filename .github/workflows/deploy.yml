@@ -12,7 +12,7 @@ jobs:
     name: Set Env Vars
     runs-on: ubuntu-latest
     steps:
-      - name: Setup DEV Environment Variables
+      - name: Set up DEV Environment Variables
         if: github.ref == 'refs/heads/dev'
         run: |
           matrix='{
@@ -30,7 +30,7 @@ jobs:
           }'
           echo "::set-env name=matrix::`echo $matrix | jq -c .`"
 
-      - name: Setup STG Environment Variables
+      - name: Set up STG Environment Variables
         if: github.ref == 'refs/heads/stg'
         run: |
           matrix='{
@@ -48,7 +48,7 @@ jobs:
           }'
           echo "::set-env name=matrix::`echo $matrix | jq -c .`"
 
-      - name: Setup PRD/CPY Environment Variables
+      - name: Set up PRD/CPY Environment Variables
         if: github.ref == 'refs/heads/master'
         # TODO: When prd really is production, in prd environment (first block below):
         # * Change standard_change_sandbox_client_key to standard_change_production_client_key
@@ -83,7 +83,7 @@ jobs:
       matrix: ${{ env.matrix }}
 
   build_and_deploy:
-    name: Build and deploy Lambda API
+    name: Build and Deploy Lambda API
     runs-on: ubuntu-latest
     needs: env
     strategy:
@@ -104,7 +104,7 @@ jobs:
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.node_version }}
@@ -176,7 +176,7 @@ jobs:
 
       - name: End Standard Change
         uses: byu-oit/github-action-end-standard-change@v1
-        if: ${{ always() && steps.start-standard-change.outcome == 'success' }} # Run if RFC started, even if the deploy failed
+        if: always() && steps.start-standard-change.outcome == 'success' # Run if RFC started, even if the deploy failed
         with:
           client-key: ${{ secrets[matrix.env.rfc_key_name] }}
           client-secret: ${{ secrets[matrix.env.rfc_secret_name] }}
