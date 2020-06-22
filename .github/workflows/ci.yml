@@ -76,11 +76,11 @@ jobs:
 
       - name: npm install
         working-directory: src
-        run: npm i
+        run: npm install
 
       - name: npm test
         working-directory: src
-        run: npm t
+        run: npm test
 
   audit:
     name: NPM Audit
@@ -110,7 +110,7 @@ jobs:
 
       - name: npm install
         working-directory: src
-        run: npm i
+        run: npm install
 
       - name: npm lint
         working-directory: src
