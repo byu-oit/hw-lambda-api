@@ -102,19 +102,19 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
 
-      - name: npm audit
+      - name: Audit App Lambda
         working-directory: src
         run: npm audit --audit-level=critical
 
-      - name: npm install
+      - name: Build App Lambda
         working-directory: src
         run: npm install --production
 
-      - name: npm lint
+      - name: Lint App Lambda
         working-directory: src
         run: npm run lint
 
-      - name: npm test
+      - name: Test App Lambda
         working-directory: src
         run: npm test
 
@@ -122,12 +122,27 @@ jobs:
         working-directory: src
         run: zip -r lambda.zip *
 
+      - name: Audit Test Lambda
+        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
+        run: npm audit --audit-level=critical
+
       - name: Build Test Lambda
         working-directory: tst/codedeploy-hooks/after-allow-test-traffic
         run: |
           npm install --production
           cp -R ../../../.postman .
-          zip -r lambda.zip * .postman
+
+      - name: Lint Test Lambda
+        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
+        run: npm run lint
+
+      - name: Test Test Lambda
+        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
+        run: npm test
+
+      - name: Package Test Lambda
+        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
+        run: zip -r lambda.zip * .postman
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
