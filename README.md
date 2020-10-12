@@ -53,9 +53,7 @@ In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param
 
 ### Enable GitHub Actions on your repo
 
-* Send a Slack message to #devops-tooling, requesting that GitHub Secrets be added to your repo. Include:
-  * The name of your GitHub repo
-  * The name of your AWS accounts
+* Use this [order form](https://it.byu.edu/it?id=sc_cat_item&sys_id=d20809201b2d141069fbbaecdc4bcb84) to give your repo access to the secrets that will let it deploy into your AWS accounts. Fill out the form twice to give access to both your `dev` and `prd` accounts.
 * In GitHub, go to the `Actions` tab for your repo (e.g. https://github.com/byu-oit/my-repo/actions)
 * Click the `Enable Actions on this repo` button
 
