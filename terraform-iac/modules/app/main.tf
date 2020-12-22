@@ -2,10 +2,18 @@ variable "env" {
   type = string
 }
 
+variable "deploy_test_postman_collection" {
+  type = string
+}
+
+variable "deploy_test_postman_environment" {
+  type = string
+}
+
 locals {
   name = "hw-lambda-api"
   tags = {
-    env              = "${var.env}"
+    env              = var.env
     data-sensitivity = "public"
     repo             = "https://github.com/byu-oit/${local.name}"
   }
@@ -14,7 +22,7 @@ locals {
 }
 
 module "acs" {
-  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v2.1.0"
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.1.0"
 }
 
 data "aws_caller_identity" "current" {}
@@ -52,7 +60,7 @@ module "lambda_api" {
   ]
 
   codedeploy_lifecycle_hooks = {
-    BeforeAllowTraffic = aws_lambda_function.test_lambda.function_name
+    BeforeAllowTraffic = module.postman_test_lambda.lambda_function.function_name
     AfterAllowTraffic  = null
   }
 }
@@ -195,67 +203,12 @@ EOF
 # Note that in my_fargate_api, we also added a policy and environment variable
 # -----------------------------------------------------------------------------
 
-resource "aws_iam_role" "test_lambda" {
-  name                 = "${local.name}-deploy-test-${var.env}"
-  permissions_boundary = module.acs.role_permissions_boundary.arn
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_lambda_function" "test_lambda" {
-  filename         = "../../../tst/codedeploy-hooks/after-allow-test-traffic/lambda.zip"
-  function_name    = "${local.name}-deploy-test-${var.env}"
-  role             = aws_iam_role.test_lambda.arn
-  handler          = "index.handler"
-  runtime          = "nodejs12.x"
-  timeout          = 30
-  source_code_hash = filebase64sha256("../../../tst/codedeploy-hooks/after-allow-test-traffic/lambda.zip")
-  environment {
-    variables = {
-      "ENV" = var.env
-    }
-  }
-}
-
-resource "aws_iam_role_policy" "test_lambda" {
-  name = "${local.name}-deploy-test-${var.env}"
-  role = aws_iam_role.test_lambda.name
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*",
-      "Effect": "Allow"
-    },
-    {
-      "Action": "codedeploy:PutLifecycleEventHookExecutionStatus",
-      "Resource": "*",
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
+module "postman_test_lambda" {
+  source                        = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v2.3.0"
+  app_name                      = "${local.name}-deploy-test-${var.env}"
+  postman_collection_file       = var.deploy_test_postman_collection
+  postman_environment_file      = var.deploy_test_postman_environment
+  role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
 }
 
 output "url" {

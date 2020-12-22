@@ -3,9 +3,13 @@ name: Deploy
 on:
   push:
     branches: [dev, stg, master]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
 env:
   node_version: "12.x"
-  tf_version: "0.12.26" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "0.14.3" # must match value in terraform-iac/*/app/main.tf
 
 jobs:
   env:
@@ -98,51 +102,36 @@ jobs:
           token: ${{ github.token }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.4
         with:
           node-version: ${{ env.node_version }}
 
-      - name: Audit App Lambda
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Audit Lambda
         working-directory: src
         run: npm audit --audit-level=critical
 
-      - name: Build App Lambda
+      - name: Build Lambda
         working-directory: src
-        run: npm install --production
+        run: npm ci --production --prefer-offline
 
-      - name: Lint App Lambda
+      - name: Lint Lambda
         working-directory: src
         run: npm run lint
 
-      - name: Test App Lambda
+      - name: Test Lambda
         working-directory: src
         run: npm test
 
-      - name: Package App Lambda
+      - name: Package Lambda
         working-directory: src
         run: zip -r lambda.zip *
-
-      - name: Audit Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm audit --audit-level=critical
-
-      - name: Build Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: |
-          npm install --production
-          cp -R ../../../.postman .
-
-      - name: Lint Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm run lint
-
-      - name: Test Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm test
-
-      - name: Package Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: zip -r lambda.zip * .postman
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -168,6 +157,14 @@ jobs:
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: terraform plan -input=false -out=plan
 
+      - name: Analyze Terraform Plan
+        uses: byu-oit/github-action-tf-plan-analyzer@v2
+        with:
+          working-directory: ${{ matrix.env.tf_working_dir }}
+          terraform-plan-file: plan
+          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
+          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
+
       - name: Start Standard Change
         uses: byu-oit/github-action-start-standard-change@v1
         id: start-standard-change
@@ -183,17 +180,17 @@ jobs:
       - name: Get CD App Name
         id: cd-app-name
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output codedeploy_app_name
+        run: terraform output -json codedeploy_app_name | tr -d '"'
 
       - name: Get CD Deployment Group Name
         id: cd-group-name
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output codedeploy_deployment_group_name
+        run: terraform output -json codedeploy_deployment_group_name | tr -d '"'
 
       - name: Get CD Appspec File
         id: cd-appspec-file
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output codedeploy_appspec_json_file
+        run: terraform output -json codedeploy_appspec_json_file | tr -d '"'
 
       - name: CodeDeploy
         id: deploy
