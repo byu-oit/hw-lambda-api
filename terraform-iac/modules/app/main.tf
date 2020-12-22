@@ -60,7 +60,7 @@ module "lambda_api" {
   ]
 
   codedeploy_lifecycle_hooks = {
-    BeforeAllowTraffic = aws_lambda_function.test_lambda.function_name
+    BeforeAllowTraffic = module.postman_test_lambda.lambda_function.function_name
     AfterAllowTraffic  = null
   }
 }
