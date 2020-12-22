@@ -23,8 +23,10 @@ provider "aws" {
 }
 
 module "app" {
-  source = "../../modules/app/"
-  env    = "prd"
+  source                          = "../../modules/app/"
+  env                             = "prd"
+  deploy_test_postman_collection  = "../../../.postman/hw-lambda-api.postman_collection.json"
+  deploy_test_postman_environment = "../../../.postman/prd-tst.postman_environment.json"
 }
 
 output "url" {
