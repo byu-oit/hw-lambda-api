@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     bucket         = "terraform-state-storage-977306314792"
     dynamodb_table = "terraform-state-lock-977306314792"
-    key            = "hw-lambda-api-dev/app.tfstate"
+    key            = "hw-lambda-api/dev/app.tfstate"
     region         = "us-west-2"
   }
   required_providers {
