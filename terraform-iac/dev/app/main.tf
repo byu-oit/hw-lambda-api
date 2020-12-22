@@ -6,10 +6,19 @@ terraform {
     key            = "hw-lambda-api-dev/app.tfstate"
     region         = "us-west-2"
   }
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "~> 2.0"
+    }
+  }
 }
 
 provider "aws" {
-  version = "~> 2.42"
   region  = "us-west-2"
 }
 
