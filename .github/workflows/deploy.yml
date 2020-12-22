@@ -113,23 +113,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Audit App Lambda
+      - name: Audit Lambda
         working-directory: src
         run: npm audit --audit-level=critical
 
-      - name: Build App Lambda
+      - name: Build Lambda
         working-directory: src
         run: npm ci --production --prefer-offline
 
-      - name: Lint App Lambda
+      - name: Lint Lambda
         working-directory: src
         run: npm run lint
 
-      - name: Test App Lambda
+      - name: Test Lambda
         working-directory: src
         run: npm test
 
-      - name: Package App Lambda
+      - name: Package Lambda
         working-directory: src
         run: zip -r lambda.zip *
 

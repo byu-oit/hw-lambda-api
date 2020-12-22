@@ -68,7 +68,7 @@ jobs:
       matrix: ${{ env.matrix }}
 
   src-test:
-    name: Test App Lambda
+    name: Test Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -94,7 +94,7 @@ jobs:
         run: npm test
 
   src-audit:
-    name: Audit App Lambda
+    name: Audit Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -109,7 +109,7 @@ jobs:
         run: npm audit --audit-level=critical
 
   src-lint:
-    name: Lint App Lambda
+    name: Lint Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -175,7 +175,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Build App Lambda
+      - name: Build Lambda
         working-directory: src
         run: |
           npm ci  --production --prefer-offline
