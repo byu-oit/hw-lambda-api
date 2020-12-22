@@ -1,21 +1,32 @@
 terraform {
-  required_version = "0.12.26" # must match value in .github/workflows/*.yml
+  required_version = "0.14.3" # must match value in .github/workflows/*.yml
   backend "s3" {
     bucket         = "terraform-state-storage-539738229445"
     dynamodb_table = "terraform-state-lock-539738229445"
-    key            = "hw-lambda-api-prd/app.tfstate"
+    key            = "hw-lambda-api/prd/app.tfstate"
     region         = "us-west-2"
+  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
   }
 }
 
 provider "aws" {
-  version = "~> 2.42"
-  region  = "us-west-2"
+  region = "us-west-2"
 }
 
 module "app" {
-  source = "../../modules/app/"
-  env    = "prd"
+  source                          = "../../modules/app/"
+  env                             = "prd"
+  deploy_test_postman_collection  = "../../../.postman/hw-lambda-api.postman_collection.json"
+  deploy_test_postman_environment = "../../../.postman/prd-tst.postman_environment.json"
 }
 
 output "url" {

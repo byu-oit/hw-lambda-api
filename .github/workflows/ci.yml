@@ -4,9 +4,13 @@ on:
   pull_request:
     branches: [dev, stg, master]
     types: [opened, reopened, synchronize, edited]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
 env:
   node_version: "12.x"
-  tf_version: "0.12.26" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "0.14.3" # must match value in terraform-iac/*/app/main.tf
 
 jobs:
   env:
@@ -64,32 +68,39 @@ jobs:
       matrix: ${{ env.matrix }}
 
   src-test:
-    name: Test App Lambda
+    name: Test Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.4
         with:
           node-version: ${{ env.node_version }}
 
-      - name: npm install
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: npm ci
         working-directory: src
-        run: npm install
+        run: npm ci --prefer-offline
 
       - name: npm test
         working-directory: src
         run: npm test
 
   src-audit:
-    name: Audit App Lambda
+    name: Audit Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.4
         with:
           node-version: ${{ env.node_version }}
 
@@ -98,75 +109,29 @@ jobs:
         run: npm audit --audit-level=critical
 
   src-lint:
-    name: Lint App Lambda
+    name: Lint Lambda
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.4
         with:
           node-version: ${{ env.node_version }}
 
-      - name: npm install
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: npm ci
         working-directory: src
-        run: npm install
+        run: npm ci --prefer-offline
 
       - name: npm lint
         working-directory: src
-        run: npm run lint
-
-  tst-test:
-    name: Test Test Lambda
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: npm install
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm install
-
-      - name: npm test
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm test
-
-  tst-audit:
-    name: Audit Test Lambda
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: npm audit
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm audit --audit-level=critical
-
-  tst-lint:
-    name: Lint Test Lambda
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: npm install
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: npm install
-
-      - name: npm lint
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
         run: npm run lint
 
   format:
@@ -203,18 +168,18 @@ jobs:
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
 
-      - name: Build App Lambda
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Build Lambda
         working-directory: src
         run: |
-          npm install --production
+          npm ci  --production --prefer-offline
           zip -r lambda.zip *
-
-      - name: Build Test Lambda
-        working-directory: tst/codedeploy-hooks/after-allow-test-traffic
-        run: |
-          npm install --production
-          cp -R ../../../.postman .
-          zip -r lambda.zip * .postman
 
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v1
@@ -227,5 +192,19 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform plan -input=false
-    # TODO: Post plan back to PR
+        run: terraform plan -input=false -out plan
+
+      - name: Analyze Terraform Plan
+        uses: byu-oit/github-action-tf-plan-analyzer@v2.0.2
+        with:
+          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
+          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
+          working-directory: ${{ matrix.env.tf_working_dir }}
+          terraform-plan-file: plan
+
+      - name: Comment Terraform Plan
+        uses: byu-oit/github-action-tf-plan-comment@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: ${{ matrix.env.tf_working_dir }}
+          terraform-plan-file: plan
