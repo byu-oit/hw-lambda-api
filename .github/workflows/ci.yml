@@ -140,6 +140,7 @@ jobs:
     needs: env
     strategy:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
 
@@ -158,6 +159,7 @@ jobs:
     needs: env
     strategy:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
 
