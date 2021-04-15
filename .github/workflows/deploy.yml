@@ -83,6 +83,9 @@ jobs:
           }'
           echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
 
+      - name: env
+        run: env
+
     outputs:
       matrix: ${{ env.matrix }}
 
@@ -217,3 +220,7 @@ jobs:
           status: ${{ job.status }}
           channel: ${{ matrix.env.slack_channel }}
           webhook-url: ${{ secrets.slack_webhook_url }}
+
+      - name: env
+        run: env
+

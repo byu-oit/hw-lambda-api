@@ -64,6 +64,9 @@ jobs:
           }'
           echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
 
+      - name: env
+        run: env
+
     outputs:
       matrix: ${{ env.matrix }}
 
@@ -93,6 +96,9 @@ jobs:
         working-directory: src
         run: npm test
 
+      - name: env
+        run: env
+
   src-audit:
     name: Audit Lambda
     runs-on: ubuntu-latest
@@ -107,6 +113,9 @@ jobs:
       - name: npm audit
         working-directory: src
         run: npm audit --audit-level=critical
+
+      - name: env
+        run: env
 
   src-lint:
     name: Lint Lambda
@@ -134,6 +143,9 @@ jobs:
         working-directory: src
         run: npm run lint
 
+      - name: env
+        run: env
+
   format:
     name: Terraform Format
     runs-on: ubuntu-latest
@@ -152,6 +164,9 @@ jobs:
       - name: Terraform Format
         working-directory: "./"
         run: terraform fmt -check -recursive
+
+      - name: env
+        run: env
 
   plan:
     name: Terraform Plan
@@ -210,3 +225,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ${{ matrix.env.tf_working_dir }}
           terraform-plan-file: plan
+
+      - name: env
+        run: env
+
