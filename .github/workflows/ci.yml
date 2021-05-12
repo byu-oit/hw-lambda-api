@@ -78,7 +78,7 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -119,7 +119,7 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -170,7 +170,7 @@ jobs:
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
