@@ -94,7 +94,7 @@ jobs:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Disallow Concurrent Runs
         uses: byu-oit/github-action-disallow-concurrent-runs@v2

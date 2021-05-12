@@ -71,7 +71,7 @@ jobs:
     name: Test Lambda
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Set up Node.js
         uses: actions/setup-node@v2.1.4
@@ -97,7 +97,7 @@ jobs:
     name: Audit Lambda
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Set up Node.js
         uses: actions/setup-node@v2.1.4
@@ -112,7 +112,7 @@ jobs:
     name: Lint Lambda
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Set up Node.js
         uses: actions/setup-node@v2.1.4
@@ -142,7 +142,7 @@ jobs:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v1
@@ -161,7 +161,7 @@ jobs:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
