@@ -1,16 +1,18 @@
 version: 2
 
 updates:
-  # App
-  - package-ecosystem: "npm"
-    directory: "/src"
+  - package-ecosystem: npm
+    directory: '/src'
     schedule:
-      interval: "daily"
-    target-branch: "dev"
+      interval: daily
+    target-branch: dev
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/" # For GitHub Actions, set the directory to / to check for workflow files in .github/workflows. (GitHub Docs)
+  - package-ecosystem: github-actions
+    directory: '/' # Check files in .github/workflows
     schedule:
-      interval: "daily"
-    target-branch: "dev"
+      interval: daily
+    target-branch: dev
+
+# For each of these, requesting reviews from yourself makes Dependabot PRs easier to find (https://github.com/pulls/review-requested)
+#    reviewers:
+#      - "YourGitHubUsername"
