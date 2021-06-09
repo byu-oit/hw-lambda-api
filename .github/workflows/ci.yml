@@ -9,8 +9,8 @@ on:
       - 'LICENSE'
       - '.gitignore'
 env:
-  node_version: "12.x"
-  tf_version: "0.14.3" # must match value in terraform-iac/*/app/main.tf
+  node_version: "14.x"
+  tf_version: "0.14.7" # must match value in terraform-iac/*/app/main.tf
 
 jobs:
   env:
@@ -74,11 +74,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ env.node_version }}
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -115,11 +115,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ env.node_version }}
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -170,7 +170,7 @@ jobs:
           aws-secret-access-key: ${{ secrets[matrix.env.aws_secret_name] }}
           aws-region: us-west-2
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -196,17 +196,17 @@ jobs:
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: terraform plan -input=false -out plan
 
-      - name: Analyze Terraform Plan
-        uses: byu-oit/github-action-tf-plan-analyzer@v2.0.2
-        with:
-          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
-          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
-          working-directory: ${{ matrix.env.tf_working_dir }}
-          terraform-plan-file: plan
-
       - name: Comment Terraform Plan
         uses: byu-oit/github-action-tf-plan-comment@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ${{ matrix.env.tf_working_dir }}
           terraform-plan-file: plan
+
+      - name: Analyze Terraform Plan
+        uses: byu-oit/github-action-tf-plan-analyzer@v2
+        with:
+          working-directory: ${{ matrix.env.tf_working_dir }}
+          terraform-plan-file: plan
+          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
+          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
