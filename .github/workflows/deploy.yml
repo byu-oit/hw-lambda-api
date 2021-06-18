@@ -117,7 +117,7 @@ jobs:
 
       - name: Build
         working-directory: src
-        run: npm ci --production --prefer-offline
+        run: npm ci --prefer-offline
 
       - name: Lint
         working-directory: src
@@ -126,6 +126,11 @@ jobs:
       - name: Test
         working-directory: src
         run: npm test
+
+        # We only want the production dependencies in the zip file
+      - name: Prune
+        working-directory: src
+        run: npm prune --production
 
       - name: Package
         working-directory: src
