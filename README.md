@@ -35,7 +35,7 @@ git checkout -b dev
   * replace `byu_oit_terraform_prd` with the name of your `prd` AWS account (with underscores)
   * replace `#slack-bot-testing` with the name the Slack channel where you want to send deployment notifications
   * replace `Codepipeline-Standard-Change` with your [Standard Change Template ID](https://it.byu.edu/nav_to.do?uri=%2Fu_standard_change_template_list.do) - If you need to create a new template, ask in [#servicenow](https://byu-oit.slack.com/archives/C18T2SYTT) for help getting it into the [sandbox ServiceNow environment](https://support-test.byu.edu/)
-* rename the `.postman/hw-lambda-api.postman_collection.json` file with the name of your repo
+* _Rename_ [`.postman/hw-lambda-api.postman_collection.json`](.postman/hw-lambda-api.postman_collection.json) with the name of your repo replacing `hw-lambda-api` in the filename
 * Add yourself (or your team) as a [Dependabot reviewer](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates#reviewers) in [`dependabot.yml`](.github/dependabot.yml)
 * Commit/push your changes
 ```
