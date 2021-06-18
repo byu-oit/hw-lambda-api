@@ -201,10 +201,14 @@ EOF
 # -----------------------------------------------------------------------------
 
 module "postman_test_lambda" {
-  source                        = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v2.3.0"
-  app_name                      = "${var.repo_name}-deploy-test-${var.env}"
-  postman_collection_file       = var.deploy_test_postman_collection
-  postman_environment_file      = var.deploy_test_postman_environment
+  source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v3.0.1"
+  app_name = "${var.repo_name}-deploy-test-${var.env}"
+  postman_collections = [
+    {
+      collection  = var.deploy_test_postman_collection
+      environment = var.deploy_test_postman_environment
+    }
+  ]
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
 }
 
