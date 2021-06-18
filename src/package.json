@@ -8,15 +8,21 @@
     "@aws-sdk/client-s3": "^3.18.0"
   },
   "devDependencies": {
+    "snazzy": "^9.0.0",
     "standard": "^16.0.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "lint": "npx standard"
+    "lint": "standard --verbose | snazzy",
+    "test": "echo \"Error: no test specified\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/byu-oit/hw-lambda-api.git"
+  },
+  "standard": {
+    "env": {
+      "node": true
+    }
   },
   "author": "",
   "license": "Apache-2.0",
