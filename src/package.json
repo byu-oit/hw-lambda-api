@@ -1,31 +1,44 @@
 {
   "name": "hw-lambda-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Example of creating and deploying an API with Lambda and Terraform on AWS",
+  "author": "",
+  "license": "Apache-2.0",
   "main": "index.js",
+  "scripts": {
+    "lint": "standard --verbose | snazzy",
+    "test": "jest"
+  },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.18.0",
     "@aws-sdk/client-s3": "^3.18.0"
   },
   "devDependencies": {
+    "jest": "^27.0.5",
     "snazzy": "^9.0.0",
     "standard": "^16.0.3"
   },
-  "scripts": {
-    "lint": "standard --verbose | snazzy",
-    "test": "echo \"Error: no test specified\""
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "passWithNoTests": true,
+    "testEnvironment": "node",
+    "verbose": true
+  },
+  "standard": {
+    "env": {
+      "jest": true,
+      "node": true
+    }
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/byu-oit/hw-lambda-api.git"
   },
-  "standard": {
-    "env": {
-      "node": true
-    }
-  },
-  "author": "",
-  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/byu-oit/hw-lambda-api/issues"
   },
