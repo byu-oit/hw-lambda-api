@@ -1,3 +1,7 @@
+variable "repo_name" {
+  type = string
+}
+
 variable "env" {
   type = string
 }
@@ -11,18 +15,12 @@ variable "deploy_test_postman_environment" {
 }
 
 locals {
-  name = "hw-lambda-api"
-  tags = {
-    env              = var.env
-    data-sensitivity = "public"
-    repo             = "https://github.com/byu-oit/${local.name}"
-  }
-  some_secret_name = "/${local.name}/${var.env}/some-secret"
+  some_secret_name = "/${var.repo_name}/${var.env}/some-secret"
   some_secret_arn  = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${local.some_secret_name}"
 }
 
 module "acs" {
-  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.1.0"
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.2.0"
 }
 
 data "aws_caller_identity" "current" {}
@@ -33,8 +31,8 @@ data "aws_ssm_parameter" "some_secret" {
 }
 
 module "lambda_api" {
-  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.1.0"
-  app_name                      = local.name
+  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.2.0"
+  app_name                      = var.repo_name
   env                           = var.env
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
   lambda_zip_file               = "../../../src/lambda.zip"
@@ -66,7 +64,7 @@ module "lambda_api" {
 }
 
 resource "aws_iam_policy" "my_ssm_policy" {
-  name        = "${local.name}-ssm-${var.env}"
+  name        = "${var.repo_name}-ssm-${var.env}"
   path        = "/"
   description = "Access to ssm parameters"
 
@@ -89,10 +87,9 @@ EOF
 }
 
 resource "aws_dynamodb_table" "my_dynamo_table" {
-  name         = "${local.name}-${var.env}"
+  name         = "${var.repo_name}-${var.env}"
   hash_key     = "my_key_field"
   billing_mode = "PAY_PER_REQUEST"
-  tags         = local.tags
   attribute {
     name = "my_key_field"
     type = "S"
@@ -100,7 +97,7 @@ resource "aws_dynamodb_table" "my_dynamo_table" {
 }
 
 resource "aws_iam_policy" "my_dynamo_policy" {
-  name        = "${local.name}-dynamo-${var.env}"
+  name        = "${var.repo_name}-dynamo-${var.env}"
   path        = "/"
   description = "Access to dynamo table"
 
@@ -134,7 +131,7 @@ EOF
 # -----------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "my_s3_bucket" {
-  bucket = "${local.name}-${var.env}"
+  bucket = "${var.repo_name}-${var.env}"
   versioning {
     enabled = true
   }
@@ -164,7 +161,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 resource "aws_iam_policy" "my_s3_policy" {
-  name        = "${local.name}-s3-${var.env}"
+  name        = "${var.repo_name}-s3-${var.env}"
   description = "A policy to allow access to s3 to this bucket: ${aws_s3_bucket.my_s3_bucket.bucket}"
 
   policy = <<EOF
@@ -204,10 +201,14 @@ EOF
 # -----------------------------------------------------------------------------
 
 module "postman_test_lambda" {
-  source                        = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v2.3.0"
-  app_name                      = "${local.name}-deploy-test-${var.env}"
-  postman_collection_file       = var.deploy_test_postman_collection
-  postman_environment_file      = var.deploy_test_postman_environment
+  source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v3.0.2"
+  app_name = "${var.repo_name}-deploy-test-${var.env}"
+  postman_collections = [
+    {
+      collection  = var.deploy_test_postman_collection
+      environment = var.deploy_test_postman_environment
+    }
+  ]
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
 }
 
