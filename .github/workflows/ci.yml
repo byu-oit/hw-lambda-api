@@ -10,7 +10,8 @@ on:
       - '.gitignore'
 env:
   node_version: "14.x"
-  tf_version: "0.14.7" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.0.0" # must match value in terraform-iac/*/app/main.tf
+  FORCE_COLOR: 3
 
 jobs:
   env:
@@ -67,8 +68,8 @@ jobs:
     outputs:
       matrix: ${{ env.matrix }}
 
-  src-test:
-    name: Test Lambda
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -93,14 +94,20 @@ jobs:
         working-directory: src
         run: npm test
 
-  src-audit:
-    name: Audit Lambda
+      - name: Report test coverage to Codecov
+        uses: codecov/codecov-action@v1
+        if: env.CODECOV_TOKEN
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  audit:
+    name: Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ env.node_version }}
 
@@ -108,8 +115,8 @@ jobs:
         working-directory: src
         run: npm audit --audit-level=critical
 
-  src-lint:
-    name: Lint Lambda
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -180,7 +187,7 @@ jobs:
       - name: Build Lambda
         working-directory: src
         run: |
-          npm ci  --production --prefer-offline
+          npm ci --production --prefer-offline
           zip -r lambda.zip *
 
       - name: Terraform Setup
