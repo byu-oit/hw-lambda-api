@@ -12,9 +12,9 @@ Example of creating and deploying an API with Lambda and Terraform on AWS
 ## Setup
 * Create a new repo [using this template](https://github.com/byu-oit/hw-lambda-api/generate).
 
-  You need your own repo so that you can push changes and have CodePipeline deploy them.
+  You need your own repo so that you can push changes and have GitHub Actions deploy them.
   
-  Keep your repo name relatively short. Since we're creating AWS resources based off the name, we've seen [issues with repo names longer than about 24 characters](https://github.com/byu-oit/hello-world-api/issues/22).
+  Keep your repo name relatively short. Since we're creating AWS resources based off the name, we've seen [issues with repo names longer than about 24 characters](https://github.com/byu-oit/hw-fargate-api/issues/22).
 
 * Clone your new repo
 ```
@@ -61,7 +61,7 @@ In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param
 * In GitHub, go to the `Actions` tab for your repo (e.g. https://github.com/byu-oit/my-repo/actions)
 * Click the `Enable Actions on this repo` button
 
-If you look at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), you'll see that it is set up to run on pushes to the dev branch. Because you have already pushed to the dev branch, this workflow should be running now.
+If you look at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), you'll see that it is set up to run on pushes to the `dev` branch. Because you have already pushed to the `dev` branch, this workflow should be running now.
 
 * In GitHub, click on the workflow run (it has the same name as the last commit message you pushed)
 * Click on the `Build and Deploy` job
