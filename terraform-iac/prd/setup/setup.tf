@@ -8,13 +8,25 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 3.38.0"
     }
   }
 }
 
+locals {
+  repo_name = "hw-lambda-api"
+  env       = "prd"
+}
+
 provider "aws" {
   region = "us-west-2"
+  default_tags {
+    tags = {
+      env              = local.env
+      data-sensitivity = "public"
+      repo             = "https://github.com/byu-oit/${local.repo_name}"
+    }
+  }
 }
 
 variable "some_secret" {
@@ -24,6 +36,7 @@ variable "some_secret" {
 
 module "setup" {
   source      = "../../modules/setup/"
-  env         = "prd"
+  repo_name   = local.repo_name
+  env         = local.env
   some_secret = var.some_secret
 }
