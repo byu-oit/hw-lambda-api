@@ -31,7 +31,7 @@ data "aws_ssm_parameter" "some_secret" {
 }
 
 module "lambda_api" {
-  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.2.0"
+  source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v1.3.0"
   app_name                      = var.repo_name
   env                           = var.env
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
