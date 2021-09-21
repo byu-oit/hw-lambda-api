@@ -202,7 +202,7 @@ EOF
 
 module "postman_test_lambda" {
   source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v3.2.2"
-  app_name = "${var.repo_name}-deploy-test-${var.env}"
+  app_name = "${var.repo_name}-${var.env}"
   postman_collections = [
     {
       collection  = var.deploy_test_postman_collection
