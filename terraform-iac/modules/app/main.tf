@@ -20,7 +20,7 @@ locals {
 }
 
 module "acs" {
-  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.2.0"
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.4.0"
 }
 
 data "aws_caller_identity" "current" {}
