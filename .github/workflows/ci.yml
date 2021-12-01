@@ -159,6 +159,8 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
       fail-fast: false
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v2
 
@@ -222,4 +224,4 @@ jobs:
         uses: fastify/github-action-merge-dependabot@v2.6.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          target: patch
+          target: minor
