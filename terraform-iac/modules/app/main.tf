@@ -20,7 +20,7 @@ locals {
 }
 
 module "acs" {
-  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.4.0"
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v3.5.0"
 }
 
 data "aws_caller_identity" "current" {}
@@ -37,7 +37,7 @@ module "lambda_api" {
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
   lambda_zip_file               = "../../../src/lambda.zip"
   handler                       = "index.handler"
-  runtime                       = "nodejs14.x"
+  runtime                       = "nodejs16.x"
   hosted_zone                   = module.acs.route53_zone
   https_certificate_arn         = module.acs.certificate.arn
   public_subnet_ids             = module.acs.public_subnet_ids
@@ -201,7 +201,7 @@ EOF
 # -----------------------------------------------------------------------------
 
 module "postman_test_lambda" {
-  source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v3.2.3"
+  source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v4.0.0"
   app_name = "${var.repo_name}-${var.env}"
   postman_collections = [
     {
