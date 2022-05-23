@@ -2,15 +2,15 @@ name: CI
 
 on:
   pull_request:
-    branches: [dev, stg, master]
+    branches: [dev, stg, prd]
     types: [opened, reopened, synchronize, edited]
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
 env:
-  node_version: "14.x"
-  tf_version: "1.0.0" # must match value in terraform-iac/*/app/main.tf
+  node_version: "16.x"
+  tf_version: "1.2.0" # must match value in terraform-iac/*/app/main.tf
   FORCE_COLOR: 3
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
           echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
 
       - name: Set up PRD/CPY Environment Variables
-        if: github.base_ref == 'master'
+        if: github.base_ref == 'prd'
         run: |
           matrix='{
             "env":[
@@ -72,10 +72,10 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           cache: npm
@@ -90,7 +90,7 @@ jobs:
         run: npm test
 
       - name: Report test coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: env.CODECOV_TOKEN
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -99,10 +99,10 @@ jobs:
     name: Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
 
@@ -116,10 +116,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           cache: npm
@@ -141,10 +141,10 @@ jobs:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
 
@@ -160,9 +160,11 @@ jobs:
       matrix: ${{ fromJson(needs.env.outputs.matrix) }}
       fail-fast: false
     permissions:
+      contents: read
+      actions: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -172,7 +174,7 @@ jobs:
           aws-region: us-west-2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           cache: npm
@@ -185,7 +187,7 @@ jobs:
           zip -r lambda.zip *
 
       - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
 
@@ -221,11 +223,10 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Auto-merge Dependabot Pull Request
-        uses: fastify/github-action-merge-dependabot@v3.0.2
+        uses: fastify/github-action-merge-dependabot@v3.1.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           target: minor
-
