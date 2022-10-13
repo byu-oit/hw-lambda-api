@@ -32,19 +32,17 @@ data "aws_ssm_parameter" "some_secret" {
 
 module "lambda_api" {
   source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v2.1.1"
-  app_name                      = var.repo_name
-  env                           = var.env
+  app_name                      = "${var.repo_name}-${var.env}"
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
-  lambda_zip_file               = "../../../src/lambda.zip"
-  handler                       = "index.handler"
-  runtime                       = "nodejs16.x"
+  zip_filename                  = "../../../src/lambda.zip"
+  zip_handler                   = "index.handler"
+  zip_runtime                   = "nodejs16.x"
   hosted_zone                   = module.acs.route53_zone
   https_certificate_arn         = module.acs.certificate.arn
   public_subnet_ids             = module.acs.public_subnet_ids
   vpc_id                        = module.acs.vpc.id
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
   codedeploy_test_listener_port = 4443
-  use_codedeploy                = true
 
   environment_variables = {
     "SOME_SECRET_NAME" = local.some_secret_name                   # You can pass in the secret name and fetch it in code
