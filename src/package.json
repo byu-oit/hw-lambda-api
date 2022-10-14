@@ -10,13 +10,13 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.95.0",
-    "@aws-sdk/client-s3": "^3.95.0"
+    "@aws-sdk/client-dynamodb": "^3.188.0",
+    "@aws-sdk/client-s3": "^3.188.0"
   },
   "devDependencies": {
-    "jest": "^28.1.0",
+    "jest": "^29.1.2",
     "snazzy": "^9.0.0",
-    "standard": "^16.0.4"
+    "standard": "^17.0.0"
   },
   "jest": {
     "collectCoverage": true,
@@ -30,10 +30,7 @@
     "verbose": true
   },
   "standard": {
-    "env": {
-      "jest": true,
-      "node": true
-    }
+    "env": ["jest", "node"]
   },
   "repository": {
     "type": "git",
