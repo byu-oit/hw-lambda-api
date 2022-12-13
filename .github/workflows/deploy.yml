@@ -9,7 +9,7 @@ on:
       - '.gitignore'
 env:
   node_version: "16.x"
-  tf_version: "1.2.0" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.3.6" # must match value in terraform-iac/*/app/main.tf
   FORCE_COLOR: 3
 concurrency: ${{ github.ref }}
 jobs:
@@ -148,6 +148,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ${{ matrix.env.tf_working_dir }}
@@ -163,6 +164,8 @@ jobs:
 
       - name: Analyze Terraform Plan
         uses: byu-oit/github-action-tf-plan-analyzer@v2
+        if: github.repository_owner == 'byu-oit'
+        # If you're at BYU, but outside the byu-oit GitHub org, you may be able to obtain credentials by contacting cloudoffice@byu.edu
         with:
           working-directory: ${{ matrix.env.tf_working_dir }}
           terraform-plan-file: plan
