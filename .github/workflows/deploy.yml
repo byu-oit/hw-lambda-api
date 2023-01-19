@@ -9,7 +9,7 @@ on:
       - '.gitignore'
 env:
   node_version: "16.x"
-  tf_version: "1.2.0" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.3.6" # must match value in terraform-iac/*/app/main.tf
   FORCE_COLOR: 3
 concurrency: ${{ github.ref }}
 jobs:
@@ -148,6 +148,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ${{ matrix.env.tf_working_dir }}
@@ -163,6 +164,8 @@ jobs:
 
       - name: Analyze Terraform Plan
         uses: byu-oit/github-action-tf-plan-analyzer@v2
+        if: github.repository_owner == 'byu-oit'
+        # If you're at BYU, but outside the byu-oit GitHub org, you may be able to obtain credentials by contacting cloudoffice@byu.edu
         with:
           working-directory: ${{ matrix.env.tf_working_dir }}
           terraform-plan-file: plan
@@ -181,33 +184,22 @@ jobs:
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: terraform apply plan
 
-      - name: Get CD App Name
-        id: cd-app-name
+      - name: Get Terraform Outputs
+        id: terraform-outputs
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output -json codedeploy_app_name | tr -d '"'
-
-      - name: Get CD Deployment Group Name
-        id: cd-group-name
-        working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output -json codedeploy_deployment_group_name | tr -d '"'
-
-      - name: Get CD Appspec File
-        id: cd-appspec-file
-        working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output -json codedeploy_appspec_json_file | tr -d '"'
-
-      - name: Get URL
-        id: url
-        working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform output -json url | tr -d '"'
+        run: |
+          echo "codedeploy_app_name=$(terraform output -raw codedeploy_app_name)" >> $GITHUB_OUTPUT
+          echo "codedeploy_deployment_group_name=$(terraform output -raw codedeploy_deployment_group_name)" >> $GITHUB_OUTPUT
+          echo "codedeploy_appspec_json_file=$(terraform output -raw codedeploy_appspec_json_file)" >> $GITHUB_OUTPUT
+          echo "url=$(terraform output -raw url)" >> $GITHUB_OUTPUT
 
       - name: CodeDeploy
         id: deploy
-        uses: byu-oit/github-action-codedeploy@v1
+        uses: byu-oit/github-action-codedeploy@v2
         with:
-          application-name: ${{ steps.cd-app-name.outputs.stdout }}
-          deployment-group-name: ${{ steps.cd-group-name.outputs.stdout }}
-          appspec-file: ${{ steps.cd-appspec-file.outputs.stdout }}
+          application-name: ${{ steps.terraform-outputs.outputs.codedeploy_app_name }}
+          deployment-group-name: ${{ steps.terraform-outputs.outputs.codedeploy_deployment_group_name }}
+          appspec-file: ${{ steps.terraform-outputs.outputs.codedeploy_appspec_json_file }}
 
       - name: End Standard Change
         uses: byu-oit/github-action-end-standard-change@v1
