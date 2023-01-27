@@ -32,10 +32,7 @@ git checkout -b dev
   * replace `539738229445` with your `prd` AWS account number
   * replace `hw-lambda-api` with the name of your repo
   * replace `byu-oit-terraform-dev` with the name of your `dev` AWS account
-  * replace `byu_oit_terraform_dev` with the name of your `dev` AWS account (with underscores)
   * replace `byu-oit-terraform-prd` with the name of your `prd` AWS account
-  * replace `byu_oit_terraform_prd` with the name of your `prd` AWS account (with underscores)
-  * replace `#slack-bot-testing` with the name the Slack channel where you want to send deployment notifications
   * replace `Codepipeline-Standard-Change` with your [Standard Change Template ID](https://it.byu.edu/nav_to.do?uri=%2Fu_standard_change_template_list.do) - If you need to create a new template, ask in [#servicenow](https://byu-oit.slack.com/archives/C18T2SYTT) for help getting it into the [sandbox ServiceNow environment](https://support-test.byu.edu/)
 * _Rename_ [`.postman/hw-lambda-api.postman_collection.json`](.postman/hw-lambda-api.postman_collection.json) with the name of your repo replacing `hw-lambda-api` in the filename
 * Add yourself (or your team) as a [Dependabot reviewer](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates#reviewers) in [`dependabot.yml`](.github/dependabot.yml)
@@ -56,15 +53,6 @@ terraform apply
 ```
 
 In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param).
-
-### Get AWS Credentials
-
-* Use this [order form](https://it.byu.edu/it?id=sc_cat_item&sys_id=d20809201b2d141069fbbaecdc4bcb84) to give your repo access to the secrets that will let it deploy into your AWS accounts. Fill out the form twice to give access to both your `dev` and `prd` accounts. Please read the instructions on the form carefully - it's finicky.
-
-### Enable GitHub Actions on your repo
-
-* In GitHub, go to the `Actions` tab for your repo (e.g. https://github.com/byu-oit/my-repo/actions)
-* Click the `Enable Actions on this repo` button
 
 ### Push your changes
 
