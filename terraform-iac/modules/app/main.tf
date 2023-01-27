@@ -36,7 +36,7 @@ module "lambda_api" {
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
   zip_filename                  = "../../../src/lambda.zip"
   zip_handler                   = "index.handler"
-  zip_runtime                   = "nodejs16.x"
+  zip_runtime                   = "nodejs18.x"
   hosted_zone                   = module.acs.route53_zone
   https_certificate_arn         = module.acs.certificate.arn
   public_subnet_ids             = module.acs.public_subnet_ids
