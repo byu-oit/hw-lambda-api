@@ -26,7 +26,7 @@ jobs:
                 "environment_name":"dev",
                 "tf_working_dir":"./terraform-iac/dev/app",
                 "aws_account":"977306314792",
-                "aws_gha_role":"hw-lambda-api-dev-gha"
+                "aws_gha_role":"hw-lambda-api-dev-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
                 "rfc_secret_name":"standard_change_sandbox_client_secret",
                 "rfc_template_id":"Codepipeline-Standard-Change"
@@ -44,7 +44,7 @@ jobs:
                 "environment_name":"stg",
                 "tf_working_dir":"./terraform-iac/stg/app",
                 "aws_account":"977306314792",
-                "aws_gha_role":"hw-lambda-api-stg-gha"
+                "aws_gha_role":"hw-lambda-api-stg-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
                 "rfc_secret_name":"standard_change_sandbox_client_secret",
                 "rfc_template_id":"Codepipeline-Standard-Change"
@@ -66,7 +66,7 @@ jobs:
                 "environment_name":"prd",
                 "tf_working_dir":"./terraform-iac/prd/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-cpy-gha"
+                "aws_gha_role":"hw-lambda-api-cpy-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
                 "rfc_secret_name":"standard_change_sandbox_client_secret",
                 "rfc_template_id":"Codepipeline-Standard-Change"
@@ -75,7 +75,7 @@ jobs:
                 "environment_name":"cpy",
                 "tf_working_dir":"./terraform-iac/cpy/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-prd-gha"
+                "aws_gha_role":"hw-lambda-api-prd-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
                 "rfc_secret_name":"standard_change_sandbox_client_secret",
                 "rfc_template_id":"Codepipeline-Standard-Change"
