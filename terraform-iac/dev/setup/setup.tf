@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.3.7" # must match value in .github/workflows/*.yml
+  required_version = "1.4.0" # must match value in .github/workflows/*.yml
   backend "s3" {
     bucket         = "terraform-state-storage-977306314792"
     dynamodb_table = "terraform-state-lock-977306314792"
@@ -9,7 +9,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.52"
+      version = "~> 4.58"
     }
   }
 }
