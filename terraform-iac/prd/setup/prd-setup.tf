@@ -1,15 +1,15 @@
 terraform {
-  required_version = "1.4.2" # must match value in .github/workflows/*.yml
+  required_version = "1.4.5" # must match value in .github/workflows/*.yml
   backend "s3" {
-    bucket         = "terraform-state-storage-977306314792"
-    dynamodb_table = "terraform-state-lock-977306314792"
-    key            = "hw-lambda-api/stg/setup.tfstate"
+    bucket         = "terraform-state-storage-539738229445"
+    dynamodb_table = "terraform-state-lock-539738229445"
+    key            = "hw-lambda-api/prd/setup.tfstate"
     region         = "us-west-2"
   }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.59"
+      version = "~> 4.63"
     }
     local = {
       source  = "hashicorp/local"
@@ -20,7 +20,7 @@ terraform {
 
 locals {
   repo_name = "hw-lambda-api"
-  env       = "stg"
+  env       = "prd"
 }
 
 provider "aws" {
