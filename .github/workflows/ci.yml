@@ -54,12 +54,12 @@ jobs:
               {
                 "tf_working_dir":"./terraform-iac/prd/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-cpy-gha"
+                "aws_gha_role":"hw-lambda-api-prd-gha"
               },
               {
                 "tf_working_dir":"./terraform-iac/cpy/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-prd-gha"
+                "aws_gha_role":"hw-lambda-api-cpy-gha"
               }
             ]
           }'
