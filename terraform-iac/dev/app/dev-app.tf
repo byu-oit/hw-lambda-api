@@ -27,6 +27,7 @@ provider "aws" {
   region = "us-west-2"
   default_tags {
     tags = {
+      app              = "hw-lambda-api"
       env              = local.env
       data-sensitivity = "public"
       repo             = "https://github.com/byu-oit/${local.repo_name}"
