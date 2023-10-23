@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.430",
-    "@aws-sdk/client-s3": "^3.430"
+    "@aws-sdk/client-s3": "^3.433"
   },
   "devDependencies": {
     "jest": "^29.7.0",
