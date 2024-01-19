@@ -9,7 +9,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.65"
+      version = "~> 5.33"
     }
     local = {
       source  = "hashicorp/local"
@@ -25,6 +25,7 @@ locals {
 
 provider "aws" {
   region = "us-west-2"
+
   default_tags {
     tags = {
       app              = "hw-lambda-api"
