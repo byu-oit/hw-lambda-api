@@ -24,7 +24,7 @@ jobs:
           matrix='{
             "env":[
               {
-                "tf_working_dir":"./iac/dev/app",
+                "environment_name":"dev",
                 "aws_account":"977306314792",
                 "aws_gha_role":"hw-lambda-api-dev-gha"
               }
@@ -38,7 +38,7 @@ jobs:
           matrix='{
             "env":[
               {
-                "tf_working_dir":"./iac/stg/app",
+                "environment_name":"stg",
                 "aws_account":"977306314792",
                 "aws_gha_role":"hw-lambda-api-stg-gha"
               }
@@ -52,12 +52,12 @@ jobs:
           matrix='{
             "env":[
               {
-                "tf_working_dir":"./iac/prd/app",
+                 "environment_name":"prd",
                 "aws_account":"539738229445",
                 "aws_gha_role":"hw-lambda-api-cpy-gha"
               },
               {
-                "tf_working_dir":"./iac/cpy/app",
+                "environment_name":"cpy",
                 "aws_account":"539738229445",
                 "aws_gha_role":"hw-lambda-api-prd-gha"
               }
@@ -127,11 +127,11 @@ jobs:
 
       - name: Tofu Init
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: tofu init
+        run: tofu init -var-file=${{ matrix.env.environment_name }}.tfvars
 
       - name: Tofu Plan
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: tofu plan -input=false -out plan -lock=false
+        run: tofu plan -var-file=${{ matrix.env.environment_name }}.tfvars -input=false -out plan -lock=false
 
       - name: Comment Tofu Plan
         uses: byu-oit/github-action-tf-plan-comment@v1
