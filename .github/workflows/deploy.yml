@@ -10,7 +10,7 @@ on:
       - '.gitignore'
 env:
   node_version: "22.x"
-  tf_version: "1.9.8" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.9.0" # must match value in terraform-iac/*/app/main.tf
   FORCE_COLOR: 3
 concurrency: ${{ github.ref }}
 jobs:
@@ -151,22 +151,22 @@ jobs:
           aws-region: us-west-2
 
       - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v3
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: ${{ env.tf_version }}
-          terraform_wrapper: false
+          tofu_version: ${{ env.tf_version }}
+          tofu_wrapper: false
 
       - name: Terraform Init
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform init
+        run: tofu init
 
       - name: Terraform Format
         working-directory: "./"
-        run: terraform fmt -check -recursive
+        run: tofu fmt -check -recursive
 
       - name: Terraform Plan
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform plan -input=false -out=plan
+        run: tofu plan -input=false -out=plan
 
       - name: Analyze Terraform Plan
         uses: byu-oit/github-action-tf-plan-analyzer@v2
@@ -188,16 +188,16 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform apply plan
+        run: tofu apply plan
 
       - name: Get Terraform Outputs
         id: terraform-outputs
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: |
-          echo "codedeploy_app_name=$(terraform output -raw codedeploy_app_name)" >> $GITHUB_OUTPUT
-          echo "codedeploy_deployment_group_name=$(terraform output -raw codedeploy_deployment_group_name)" >> $GITHUB_OUTPUT
-          echo "codedeploy_appspec_json_file=$(terraform output -raw codedeploy_appspec_json_file)" >> $GITHUB_OUTPUT
-          echo "url=$(terraform output -raw url)" >> $GITHUB_OUTPUT
+          echo "codedeploy_app_name=$(tofu output -raw codedeploy_app_name)" >> $GITHUB_OUTPUT
+          echo "codedeploy_deployment_group_name=$(tofu output -raw codedeploy_deployment_group_name)" >> $GITHUB_OUTPUT
+          echo "codedeploy_appspec_json_file=$(tofu output -raw codedeploy_appspec_json_file)" >> $GITHUB_OUTPUT
+          echo "url=$(tofu output -raw url)" >> $GITHUB_OUTPUT
 
       - name: CodeDeploy
         id: deploy

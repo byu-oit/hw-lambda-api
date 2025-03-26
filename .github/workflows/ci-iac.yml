@@ -10,7 +10,7 @@ on:
 
 env:
   node_version: "22.x"
-  tf_version: "1.9.8" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.9.0" # must match value in terraform-iac/*/app/main.tf
 
 jobs:
   env:
@@ -69,20 +69,20 @@ jobs:
       matrix: ${{ env.matrix }}
 
   format:
-    name: Terraform Format
+    name: Tofu Format
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v3
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: ${{ env.tf_version }}
+          tofu_version: ${{ env.tf_version }}
 
       - name: Terraform Format
         working-directory: terraform-iac
-        run: terraform fmt -check -recursive
+        run: tofu fmt -check -recursive
 
   plan:
     name: Terraform Plan / ${{ matrix.env.environment_name }}
@@ -121,17 +121,17 @@ jobs:
           zip -r lambda.zip *
 
       - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v3
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: ${{ env.tf_version }}
+          tofu_version: ${{ env.tf_version }}
 
       - name: Terraform Init
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform init
+        run: tofu init
 
       - name: Terraform Plan
         working-directory: ${{ matrix.env.tf_working_dir }}
-        run: terraform plan -input=false -out plan -lock=false
+        run: tofu plan -input=false -out plan -lock=false
 
       - name: Comment Terraform Plan
         uses: byu-oit/github-action-tf-plan-comment@v1
