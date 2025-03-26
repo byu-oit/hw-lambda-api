@@ -1,17 +1,16 @@
-name: CI
+name: CI / IaC
 
 on:
   pull_request:
     branches: [dev, stg, prd]
     types: [opened, reopened, synchronize, edited]
-    paths-ignore:
-      - 'README.md'
-      - 'LICENSE'
-      - '.gitignore'
+    paths:
+      - 'terraform-iac/**'
+      - '.github/workflows/ci-iac.yml'
+
 env:
   node_version: "22.x"
   tf_version: "1.9.8" # must match value in terraform-iac/*/app/main.tf
-  FORCE_COLOR: 3
 
 jobs:
   env:
@@ -55,12 +54,12 @@ jobs:
               {
                 "tf_working_dir":"./terraform-iac/prd/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-prd-gha"
+                "aws_gha_role":"hw-lambda-api-cpy-gha"
               },
               {
                 "tf_working_dir":"./terraform-iac/cpy/app",
                 "aws_account":"539738229445",
-                "aws_gha_role":"hw-lambda-api-cpy-gha"
+                "aws_gha_role":"hw-lambda-api-prd-gha"
               }
             ]
           }'
@@ -69,82 +68,10 @@ jobs:
     outputs:
       matrix: ${{ env.matrix }}
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-          cache: npm
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: npm ci
-        working-directory: src
-        run: npm ci --prefer-offline
-
-      - name: npm test
-        working-directory: src
-        run: npm test
-
-      - name: Report test coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: env.CODECOV_TOKEN
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-
-      # We don't need to install deps to audit them
-
-      - name: npm audit
-        working-directory: src
-        run: npm audit --audit-level=critical
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-          cache: npm
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: npm ci
-        working-directory: src
-        run: npm ci --prefer-offline
-
-      - name: npm lint
-        working-directory: src
-        run: npm run lint
-
   format:
     name: Terraform Format
     timeout-minutes: 3
     runs-on: ubuntu-latest
-    needs: env
-    strategy:
-      matrix: ${{ fromJson(needs.env.outputs.matrix) }}
-      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
@@ -154,11 +81,11 @@ jobs:
           terraform_version: ${{ env.tf_version }}
 
       - name: Terraform Format
-        working-directory: "./"
+        working-directory: terraform-iac
         run: terraform fmt -check -recursive
 
   plan:
-    name: Terraform Plan
+    name: Terraform Plan / ${{ matrix.env.environment_name }}
     timeout-minutes: 6
     runs-on: ubuntu-latest
     needs: env
@@ -220,4 +147,3 @@ jobs:
           terraform-plan-file: plan
           divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
           divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
-
