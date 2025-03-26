@@ -75,7 +75,7 @@ module "lambda_api" {
   source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v4.0.0"
   app_name                      = "${local.name}-${var.env}"
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
-  zip_filename                  = "../../../src/lambda.zip"
+  zip_filename                  = "../../src/lambda.zip"
   zip_handler                   = "index.handler"
   zip_runtime                   = "nodejs22.x"
   hosted_zone                   = module.acs.route53_zone

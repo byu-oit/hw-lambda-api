@@ -81,7 +81,7 @@ jobs:
           tofu_version: ${{ env.tf_version }}
 
       - name: Tofu Format
-        working-directory: iac/app
+        working-directory: iac
         run: tofu fmt -check -recursive
 
   plan:
