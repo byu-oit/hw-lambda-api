@@ -81,7 +81,7 @@ jobs:
           tofu_version: ${{ env.tf_version }}
 
       - name: Tofu Format
-        working-directory: iac
+        working-directory: iac/app
         run: tofu fmt -check -recursive
 
   plan:
@@ -126,24 +126,24 @@ jobs:
           tofu_version: ${{ env.tf_version }}
 
       - name: Tofu Init
-        working-directory: ${{ matrix.env.tf_working_dir }}
+        working-directory: iac/app
         run: tofu init -var-file=${{ matrix.env.environment_name }}.tfvars
 
       - name: Tofu Plan
-        working-directory: ${{ matrix.env.tf_working_dir }}
+        working-directory: iac/app
         run: tofu plan -var-file=${{ matrix.env.environment_name }}.tfvars -input=false -out plan -lock=false
 
       - name: Comment Tofu Plan
         uses: byu-oit/github-action-tf-plan-comment@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: ${{ matrix.env.tf_working_dir }}
+          working-directory: iac/app
           terraform-plan-file: plan
 
       - name: Analyze Tofu Plan
         uses: byu-oit/github-action-tf-plan-analyzer@v2
         with:
-          working-directory: ${{ matrix.env.tf_working_dir }}
+          working-directory: iac/app
           terraform-plan-file: plan
           divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
           divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
