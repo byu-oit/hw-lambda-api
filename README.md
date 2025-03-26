@@ -1,15 +1,14 @@
 # hw-lambda-api
-Example of creating and deploying an API with Lambda and Terraform on AWS
+Example of creating and deploying a Lambda API with OpenTofu on AWS
 
 ## Prerequisites
 
-* Install [Terraform](https://www.terraform.io/downloads.html)
+* Install [OpenTofu](https://opentofu.org/docs/intro/install/)
 * Install the [AWS CLI](https://aws.amazon.com/cli/)
 * Log into your `dev` account (with [`aws sso login`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/sso/login.html))
-* Ensure your account has a [Terraform State S3 Backend](https://github.com/byu-oit/terraform-aws-backend-s3) deployed
+* Ensure your account has a [Terraform/OpenTofu State S3 Backend](https://github.com/byu-oit/terraform-aws-backend-s3) deployed
 * If you're outside the [`byu-oit` GitHub organization](https://github.com/byu-oit):
   * Obtain a DivvyCloud username and password from the Cloud Office at cloudoffice@byu.edu
-  * Install [the GitHub App used for auto-merging Dependabot pull requests](https://github.com/apps/dependabot-merge-action) to your organization
 
 ## Setup
 * Create a new repo [using this template](https://github.com/byu-oit/hw-lambda-api/generate).
@@ -47,9 +46,9 @@ git commit -am "Update template with repo specific details"
 ### Deploy the "one time setup" resources
 
 ```sh
-cd terraform-iac/dev/setup/
-terraform init
-terraform apply
+cd iac/dev/setup/
+tofu init
+tofu apply
 ```
 
 In the AWS Console, see if you can find the resources from `setup.tf` (SSM Param).
@@ -68,11 +67,11 @@ If you look at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), y
 
 ### View the deployed application
 
-Anytime after the `Terraform Apply` step succeeds:
+Anytime after the `Tofu Apply` step succeeds:
 ```sh
 cd ../app/
-terraform init
-terraform output
+tofu init
+tofu output
 ```
 
 This will output a DNS Name. Enter this in a browser. You should get a JSON response. Between `index.js` and `main.tf`, can you find what pieces are necessary to make this data available to the app?
@@ -98,8 +97,8 @@ In GitHub Actions, watch the deploy steps run (you have a new push, so you'll ha
 
 ## Learn what was built
 
-By digging through the `.tf` files, you'll see what resources are being created. You should spend some time searching through the AWS Console for each of these resources. The goal is to start making connections between the Terraform syntax and the actual AWS resources that are created.
+By digging through the `.tf` files, you'll see what resources are being created. You should spend some time searching through the AWS Console for each of these resources. The goal is to start making connections between the OpenTofu syntax and the actual AWS resources that are created.
 
-Several OIT created Terraform modules are used. You can look these modules up in our GitHub Organization. There you can see what resources each of these modules creates. You can look those up in the AWS Console too.
+Several OIT created Terraform/OpenTofu modules are used. You can look these modules up in our GitHub Organization. There you can see what resources each of these modules creates. You can look those up in the AWS Console too.
 
 <!--TODO add some architecture docs and diagrams -->
