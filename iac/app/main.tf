@@ -26,10 +26,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      app                    = local.name
-      repo                   = "https://github.com/${local.gh_org}/${local.gh_repo}"
-      data-sensitivity       = "public"
-      env                    = var.env
+      app              = local.name
+      repo             = "https://github.com/${local.gh_org}/${local.gh_repo}"
+      data-sensitivity = "public"
+      env              = var.env
       # resource-creator-email = "GitHub-Actions"
     }
   }
@@ -53,9 +53,9 @@ variable "deploy_test_postman_environment" {
 }
 
 locals {
-  name    = "hw-lambda-api"
-  gh_org  = "byu-oit"
-  gh_repo = "hw-lambda-api"
+  name             = "hw-lambda-api"
+  gh_org           = "byu-oit"
+  gh_repo          = "hw-lambda-api"
   some_secret_name = "/${local.name}/${var.env}/some-secret"
   some_secret_arn  = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${local.some_secret_name}"
 }

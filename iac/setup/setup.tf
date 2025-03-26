@@ -27,9 +27,9 @@ provider "aws" {
   default_tags {
     tags = {
       # app                    = local.name
-      repo                   = "https://github.com/${local.gh_org}/${local.gh_repo}"
-      data-sensitivity       = "public"
-      env                    = var.env
+      repo             = "https://github.com/${local.gh_org}/${local.gh_repo}"
+      data-sensitivity = "public"
+      env              = var.env
       # resource-creator-email = "GitHub-Actions"
     }
   }
