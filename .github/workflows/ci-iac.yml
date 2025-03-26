@@ -75,17 +75,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Terraform Setup
+      - name: Tofu Setup
         uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: ${{ env.tf_version }}
 
-      - name: Terraform Format
+      - name: Tofu Format
         working-directory: terraform-iac
         run: tofu fmt -check -recursive
 
   plan:
-    name: Terraform Plan / ${{ matrix.env.environment_name }}
+    name: Tofu Plan / ${{ matrix.env.environment_name }}
     timeout-minutes: 6
     runs-on: ubuntu-latest
     needs: env
@@ -120,27 +120,27 @@ jobs:
           npm ci --production --prefer-offline
           zip -r lambda.zip *
 
-      - name: Terraform Setup
+      - name: Tofu Setup
         uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: ${{ env.tf_version }}
 
-      - name: Terraform Init
+      - name: Tofu Init
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: tofu init
 
-      - name: Terraform Plan
+      - name: Tofu Plan
         working-directory: ${{ matrix.env.tf_working_dir }}
         run: tofu plan -input=false -out plan -lock=false
 
-      - name: Comment Terraform Plan
+      - name: Comment Tofu Plan
         uses: byu-oit/github-action-tf-plan-comment@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ${{ matrix.env.tf_working_dir }}
           terraform-plan-file: plan
 
-      - name: Analyze Terraform Plan
+      - name: Analyze Tofu Plan
         uses: byu-oit/github-action-tf-plan-analyzer@v2
         with:
           working-directory: ${{ matrix.env.tf_working_dir }}
