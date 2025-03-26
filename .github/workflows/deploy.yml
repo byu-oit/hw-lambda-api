@@ -10,7 +10,7 @@ on:
       - '.gitignore'
 env:
   node_version: "22.x"
-  tf_version: "1.9.0" # must match value in terraform-iac/*/app/main.tf
+  tf_version: "1.9.0" # must match value in iac/*/app/main.tf
   FORCE_COLOR: 3
 concurrency: ${{ github.ref }}
 jobs:
@@ -26,7 +26,7 @@ jobs:
             "env":[
               {
                 "environment_name":"dev",
-                "tf_working_dir":"./terraform-iac/dev/app",
+                "tf_working_dir":"./iac/dev/app",
                 "aws_account":"977306314792",
                 "aws_gha_role":"hw-lambda-api-dev-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
@@ -44,7 +44,7 @@ jobs:
             "env":[
               {
                 "environment_name":"stg",
-                "tf_working_dir":"./terraform-iac/stg/app",
+                "tf_working_dir":"./iac/stg/app",
                 "aws_account":"977306314792",
                 "aws_gha_role":"hw-lambda-api-stg-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
@@ -66,7 +66,7 @@ jobs:
             "env":[
               {
                 "environment_name":"prd",
-                "tf_working_dir":"./terraform-iac/prd/app",
+                "tf_working_dir":"./iac/prd/app",
                 "aws_account":"539738229445",
                 "aws_gha_role":"hw-lambda-api-prd-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
@@ -75,7 +75,7 @@ jobs:
               },
               {
                 "environment_name":"cpy",
-                "tf_working_dir":"./terraform-iac/cpy/app",
+                "tf_working_dir":"./iac/cpy/app",
                 "aws_account":"539738229445",
                 "aws_gha_role":"hw-lambda-api-cpy-gha",
                 "rfc_key_name":"standard_change_sandbox_client_key",
