@@ -1,0 +1,149 @@
+name: CI / IaC
+
+on:
+  pull_request:
+    branches: [dev, stg, prd]
+    types: [opened, reopened, synchronize, edited]
+    paths:
+      - 'iac/**'
+      - '.github/workflows/ci-iac.yml'
+
+env:
+  node_version: "22.x"
+  tf_version: "1.9.0" # must match value in iac/*/app/main.tf
+
+jobs:
+  env:
+    name: Set Env Vars
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up DEV Environment Variables
+        if: github.base_ref == 'dev'
+        run: |
+          matrix='{
+            "env":[
+              {
+                "environment_name":"dev",
+                "aws_account":"977306314792",
+                "aws_gha_role":"hw-lambda-api-dev-gha"
+              }
+            ]
+          }'
+          echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
+
+      - name: Set up STG Environment Variables
+        if: github.base_ref == 'stg'
+        run: |
+          matrix='{
+            "env":[
+              {
+                "environment_name":"stg",
+                "aws_account":"977306314792",
+                "aws_gha_role":"hw-lambda-api-stg-gha"
+              }
+            ]
+          }'
+          echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
+
+      - name: Set up PRD/CPY Environment Variables
+        if: github.base_ref == 'prd'
+        run: |
+          matrix='{
+            "env":[
+              {
+                 "environment_name":"prd",
+                "aws_account":"539738229445",
+                "aws_gha_role":"hw-lambda-api-cpy-gha"
+              },
+              {
+                "environment_name":"cpy",
+                "aws_account":"539738229445",
+                "aws_gha_role":"hw-lambda-api-prd-gha"
+              }
+            ]
+          }'
+          echo matrix=`echo $matrix | jq -c .` >> $GITHUB_ENV
+
+    outputs:
+      matrix: ${{ env.matrix }}
+
+  format:
+    name: Tofu Format
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tofu Setup
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.tf_version }}
+
+      - name: Tofu Format
+        working-directory: iac
+        run: tofu fmt -check -recursive
+
+  plan:
+    name: Tofu Plan / ${{ matrix.env.environment_name }}
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    needs: env
+    strategy:
+      matrix: ${{ fromJson(needs.env.outputs.matrix) }}
+      fail-fast: false
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: "arn:aws:iam::${{ matrix.env.aws_account }}:role/${{ matrix.env.aws_gha_role }}"
+          role-session-name: ${{ github.sha }}
+          aws-region: us-west-2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node_version }}
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Build Lambda
+        working-directory: src
+        run: |
+          npm ci --production --prefer-offline
+          zip -r lambda.zip *
+
+      - name: Tofu Setup
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.tf_version }}
+
+      - name: Tofu Init
+        working-directory: iac/app
+        run: tofu init -var-file=${{ matrix.env.environment_name }}.tfvars
+
+      - name: Tofu Plan
+        working-directory: iac/app
+        run: tofu plan -var-file=${{ matrix.env.environment_name }}.tfvars -input=false -out plan -lock=false
+
+      - name: Comment Tofu Plan
+        uses: byu-oit/github-action-tf-plan-comment@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: iac/app
+          terraform-plan-file: plan
+
+      - name: Analyze Tofu Plan
+        uses: byu-oit/github-action-tf-plan-analyzer@v2
+        with:
+          working-directory: iac/app
+          terraform-plan-file: plan
+          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
+          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}

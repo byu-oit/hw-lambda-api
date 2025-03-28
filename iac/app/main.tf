@@ -1,9 +1,47 @@
-variable "repo_name" {
-  type = string
+terraform {
+  required_version = "1.9.0" # must match value in .github/workflows/*.yml
+  backend "s3" {
+    bucket         = "terraform-state-storage-${var.aws_account_id}"
+    dynamodb_table = "terraform-state-lock-${var.aws_account_id}"
+    key            = "${local.name}/${var.env}/app.tfstate"
+    encrypt        = true
+    region         = "us-west-2"
+  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.77"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.4"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-west-2"
+
+  allowed_account_ids = [var.aws_account_id]
+
+  default_tags {
+    tags = {
+      app              = local.name
+      repo             = "https://github.com/${local.gh_org}/${local.gh_repo}"
+      data-sensitivity = "public"
+      env              = var.env
+      # resource-creator-email = "GitHub-Actions"
+    }
+  }
 }
 
 variable "env" {
   type = string
+}
+
+variable "aws_account_id" {
+  type        = string
+  description = "The 12-digit number that uniquely identifies an AWS account."
 }
 
 variable "deploy_test_postman_collection" {
@@ -15,7 +53,10 @@ variable "deploy_test_postman_environment" {
 }
 
 locals {
-  some_secret_name = "/${var.repo_name}/${var.env}/some-secret"
+  name             = "hw-lambda-api"
+  gh_org           = "byu-oit"
+  gh_repo          = "hw-lambda-api"
+  some_secret_name = "/${local.name}/${var.env}/some-secret"
   some_secret_arn  = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${local.some_secret_name}"
 }
 
@@ -32,9 +73,9 @@ data "aws_ssm_parameter" "some_secret" {
 
 module "lambda_api" {
   source                        = "github.com/byu-oit/terraform-aws-lambda-api?ref=v4.0.0"
-  app_name                      = "${var.repo_name}-${var.env}"
+  app_name                      = "${local.name}-${var.env}"
   codedeploy_service_role_arn   = module.acs.power_builder_role.arn
-  zip_filename                  = "../../../src/lambda.zip"
+  zip_filename                  = "../../src/lambda.zip"
   zip_handler                   = "index.handler"
   zip_runtime                   = "nodejs22.x"
   hosted_zone                   = module.acs.route53_zone
@@ -62,7 +103,7 @@ module "lambda_api" {
 }
 
 resource "aws_iam_policy" "my_ssm_policy" {
-  name        = "${var.repo_name}-ssm-${var.env}"
+  name        = "${local.name}-ssm-${var.env}"
   path        = "/"
   description = "Access to ssm parameters"
 
@@ -85,7 +126,7 @@ EOF
 }
 
 resource "aws_dynamodb_table" "my_dynamo_table" {
-  name         = "${var.repo_name}-${var.env}"
+  name         = "${local.name}-${var.env}"
   hash_key     = "my_key_field"
   billing_mode = "PAY_PER_REQUEST"
   attribute {
@@ -95,7 +136,7 @@ resource "aws_dynamodb_table" "my_dynamo_table" {
 }
 
 resource "aws_iam_policy" "my_dynamo_policy" {
-  name        = "${var.repo_name}-dynamo-${var.env}"
+  name        = "${local.name}-dynamo-${var.env}"
   path        = "/"
   description = "Access to dynamo table"
 
@@ -129,7 +170,7 @@ EOF
 # -----------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "my_s3_bucket" {
-  bucket = "${var.repo_name}-${var.env}"
+  bucket = "${local.name}-${var.env}"
   versioning {
     enabled = true
   }
@@ -159,7 +200,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 resource "aws_iam_policy" "my_s3_policy" {
-  name        = "${var.repo_name}-s3-${var.env}"
+  name        = "${local.name}-s3-${var.env}"
   description = "A policy to allow access to s3 to this bucket: ${aws_s3_bucket.my_s3_bucket.bucket}"
 
   policy = <<EOF
@@ -200,7 +241,7 @@ EOF
 
 module "postman_test_lambda" {
   source   = "github.com/byu-oit/terraform-aws-postman-test-lambda?ref=v6.0.0"
-  app_name = "${var.repo_name}-${var.env}"
+  app_name = "${local.name}-${var.env}"
   timeout  = 60
   postman_collections = [
     {
