@@ -70,7 +70,7 @@ resource "aws_ssm_parameter" "some_secret" {
 
 module "gha_role" {
   source                         = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                        = "5.54.0"
+  version                        = "5.54.1"
   create_role                    = true
   role_name                      = "${local.name}-${var.env}-gha"
   provider_url                   = module.acs.github_oidc_provider.url
