@@ -18,6 +18,8 @@ jobs:
     name: Set Env Vars
     timeout-minutes: 1
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Set up DEV Environment Variables
         if: github.ref == 'refs/heads/dev'

@@ -17,6 +17,8 @@ jobs:
     name: Test
     timeout-minutes: 3
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
 
@@ -45,6 +47,8 @@ jobs:
     name: Audit
     timeout-minutes: 3
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
 
@@ -63,6 +67,8 @@ jobs:
     name: Lint
     timeout-minutes: 3
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
 
