@@ -14,7 +14,7 @@
     "@aws-sdk/client-s3": "^3.1045.0"
   },
   "devDependencies": {
-    "jest": "^30.3.0",
+    "jest": "^30.4.0",
     "snazzy": "^9.0.0",
     "standard": "^17.1.2"
   },
