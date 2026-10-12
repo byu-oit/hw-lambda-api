@@ -149,6 +149,3 @@ jobs:
         uses: byu-oit/github-action-tf-plan-analyzer@v2
         with:
           working-directory: iac/app
-          terraform-plan-file: plan
-          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
-          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
