@@ -9,7 +9,7 @@ on:
       - '.github/workflows/ci-app.yml'
 
 env:
-  node_version: "22.x"
+  node_version: "24.x"
   FORCE_COLOR: 3
 
 jobs:
