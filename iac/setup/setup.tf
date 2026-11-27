@@ -70,7 +70,7 @@ resource "aws_ssm_parameter" "some_secret" {
 
 module "gha_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role"
-  version = "6.11.1"
+  version = "6.11.2"
 
   name                   = "${local.name}-${var.env}-gha"
   use_name_prefix        = false
